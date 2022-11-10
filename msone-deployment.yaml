@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: msone-deployment
+  labels:
+    app: msone
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: msone
+  template:
+    metadata:
+      labels:
+        app: msone
+    spec:
+      containers:
+      - name: msone
+        image: taufik90/msone:5
+        ports:
+        - containerPort: 8099
+        env:
+         - name: PORT
+           value: "8099"
