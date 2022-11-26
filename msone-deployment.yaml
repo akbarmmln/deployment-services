@@ -69,10 +69,10 @@ spec:
          - name: PORT_MAIL_1
            value: "587" 
          - name: HOST_MAIL
-           value: "smtp-api-ny.infobip.com"
+           value: "smtp.sparkpostmail.com"
          - name: USER_MAIl
-           value: "akbar9"
+           value: "SMTP_Injection"
          - name: PASS_MAIL
-           value: "Akbarakbar@9"
+           value: "1e83e2128b3f2d6d9e5718724778247267f0bdad"
          - name: PORT_MAIL
            value: "587"
