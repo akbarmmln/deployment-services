@@ -60,11 +60,19 @@ spec:
            value: "3306"
          - name: MYSQL_DATABASE
            value: "4yur-dev"
-         - name: HOST_MAIL
+         - name: HOST_MAIL_#
            value: "smtp-relay.sendinblue.com"
-         - name: USER_MAIl
+         - name: USER_MAIl_#
            value: "akbarmmln@gmail.com"
-         - name: PASS_MAIL
+         - name: PASS_MAIL_#
            value: "cpr2hXMUzFmBnES3"
-         - name: PORT_MAIL
+         - name: PORT_MAIL_#
            value: "587" 
+         - name: HOST_MAIL
+           value: "smtp-api.infobip.com"
+         - name: USER_MAIl
+           value: "akbar9"
+         - name: PASS_MAIL
+           value: "Akbarakbar@9"
+         - name: PORT_MAIL
+           value: "587"
