@@ -69,7 +69,7 @@ spec:
          - name: PORT_MAIL_1
            value: "587" 
          - name: HOST_MAIL
-           value: "smtp-api.infobip.com"
+           value: "smtp-api-ny.infobip.com"
          - name: USER_MAIl
            value: "akbar9"
          - name: PASS_MAIL
