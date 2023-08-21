@@ -60,7 +60,7 @@ spec:
          - name: MYSQL_PORT
            value: "3306"
          - name: MYSQL_DATABASE
-           value: "ms_psynd-dev"
+           value: "ms_psynd"
          - name: ACC_KEY_ID
            value: "006SWZ1KKNP5ED8QLLWS"
          - name: SCR_ACC_KEY
