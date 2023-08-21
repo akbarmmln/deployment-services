@@ -69,3 +69,11 @@ spec:
            value: "Jakarta"
          - name: OSS_ENDPOINT
            value: "https://s3-jkt1.dcloud.co.id"
+         - name: HOST_MAIL
+           value: "smtp.sparkpostmail.com"
+         - name: USER_MAIl
+           value: "SMTP_Injection"
+         - name: PASS_MAIL
+           value: "1e83e2128b3f2d6d9e5718724778247267f0bdad"
+         - name: PORT_MAIL
+           value: "587"
