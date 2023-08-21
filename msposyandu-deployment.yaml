@@ -74,6 +74,6 @@ spec:
          - name: USER_MAIl
            value: "SMTP_Injection"
          - name: PASS_MAIL
-           value: "1e83e2128b3f2d6d9e5718724778247267f0bdad"
+           value: "6799d648c8c9c1d14685544dba09575e7849b172"
          - name: PORT_MAIL
            value: "587"
