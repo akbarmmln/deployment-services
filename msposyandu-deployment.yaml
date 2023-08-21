@@ -6,7 +6,7 @@ metadata:
   labels:
     app: msposyandu
 spec:
-  replicas: 2
+  replicas: 1
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -23,7 +23,7 @@ spec:
     spec:
       containers:
       - name: msposyandu
-        image: taufik90/msposyandu:19
+        image: taufik90/msposyandu:5
         ports:
         - containerPort: 8099
         livenessProbe:
@@ -54,7 +54,7 @@ spec:
          - name: MYSQL_HOSTNAME
            value: "rm-d9jl3xtniu9x99a4f2o.mysql.ap-southeast-5-rds.paiops.xyz"
          - name: MYSQL_USERNAME
-           value: "impsu"
+           value: "aimpsu"
          - name: MYSQL_PASSWORD
            value: "Akbarakbar@99"
          - name: MYSQL_PORT
