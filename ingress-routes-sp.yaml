@@ -1,6 +1,8 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/app-root: /sample-php
   name: ingress-routes
   namespace: sit
 spec:
@@ -13,16 +15,6 @@ spec:
         backend:
           service:
             name: sample-php-svc
-            port:
-              number: 80
-  - host: sp-info.paiops.xyz
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: sample-php-info-svc
             port:
               number: 80
   ingressClassName: nginx
