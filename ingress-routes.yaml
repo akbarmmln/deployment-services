@@ -1,0 +1,28 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-routes
+  namespace: sit
+spec:
+  rules:
+  - host: sp.paiops.xyz
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: sample-php-svc
+            port:
+              number: 80
+  - host: sp-info.paiops.xyz
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: sample-php-info-svc
+            port:
+              number: 80
+  ingressClassName: nginx
