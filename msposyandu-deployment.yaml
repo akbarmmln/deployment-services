@@ -1,9 +1,10 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: msone-deployment
+  name: msposyandu
+  namespace: sit
   labels:
-    app: msone
+    app: msposyandu
 spec:
   replicas: 2
   strategy:
@@ -14,15 +15,15 @@ spec:
   minReadySeconds: 60
   selector:
     matchLabels:
-      app: msone
+      app: msposyandu
   template:
     metadata:
       labels:
-        app: msone
+        app: msposyandu
     spec:
       containers:
-      - name: msone
-        image: taufik90/msone:19
+      - name: msposyandu
+        image: taufik90/msposyandu:19
         ports:
         - containerPort: 8099
         livenessProbe:
@@ -51,28 +52,20 @@ spec:
          - name: PORT
            value: "8099"
          - name: MYSQL_HOSTNAME
-           value: "103.152.118.253"
+           value: "rm-d9jl3xtniu9x99a4f2o.mysql.ap-southeast-5-rds.paiops.xyz"
          - name: MYSQL_USERNAME
-           value: "iampsu"
+           value: "impsu"
          - name: MYSQL_PASSWORD
-           value: "CYGr%@dOYHc0"
+           value: "Akbarakbar@99"
          - name: MYSQL_PORT
            value: "3306"
          - name: MYSQL_DATABASE
-           value: "4yur-dev"
-         - name: HOST_MAIL_1
-           value: "smtp-relay.sendinblue.com"
-         - name: USER_MAIl_1
-           value: "akbarmmln@gmail.com"
-         - name: PASS_MAIL_1
-           value: "cpr2hXMUzFmBnES3"
-         - name: PORT_MAIL_1
-           value: "587" 
-         - name: HOST_MAIL
-           value: "smtp.sparkpostmail.com"
-         - name: USER_MAIl
-           value: "SMTP_Injection"
-         - name: PASS_MAIL
-           value: "1e83e2128b3f2d6d9e5718724778247267f0bdad"
-         - name: PORT_MAIL
-           value: "587"
+           value: "ms_psynd-dev"
+         - name: ACC_KEY_ID
+           value: "006SWZ1KKNP5ED8QLLWS"
+         - name: SCR_ACC_KEY
+           value: "Qiu9PC6lDbw3byDfX1iJnGdePRtHDrSrww7Lwgkk"
+         - name: OSS_REGION
+           value: "Jakarta"
+         - name: OSS_ENDPOINT
+           value: "https://s3-jkt1.dcloud.co.id"
