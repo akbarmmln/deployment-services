@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-routes-api
+  namespace: sit
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/rewrite-target: /api/$2
+spec:
+  rules:
+  - host: api.paiops.xyz
+    http:
+      paths:
+      - path: /ms-posyandu/api(/|$)(.*)
+        pathType: Prefix
+        backend:
+          service:
+            name: msposyandu
+            port:
+              number: 8099
+  ingressClassName: nginx
