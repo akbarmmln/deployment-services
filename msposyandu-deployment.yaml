@@ -77,3 +77,5 @@ spec:
            value: "6799d648c8c9c1d14685544dba09575e7849b172"
          - name: PORT_MAIL
            value: "587"
+         - name: NO_REPLY
+           value: "noreplay@emfrst.co.id"
