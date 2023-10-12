@@ -1,0 +1,25 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+  name: ingress-routes-kube-dashboard
+  namespace: kubernetes-dashboard
+spec:
+  tls:
+  - hosts:
+    - kube-dashboard.exops.my.id
+    secretName: server-tls
+  rules:
+  - host: kube-dashboard.exops.my.id
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kubernetes-dashboard
+            port:
+              number: 443
+  ingressClassName: nginx
