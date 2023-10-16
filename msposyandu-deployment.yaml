@@ -20,6 +20,7 @@ spec:
     metadata:
       labels:
         app: msposyandu
+        version: v1
     spec:
       containers:
       - name: msposyandu
@@ -52,9 +53,9 @@ spec:
          - name: PORT
            value: "8099"
          - name: MYSQL_HOSTNAME
-           value: "rm-d9jl3xtniu9x99a4f2o.mysql.ap-southeast-5-rds.paiops.xyz"
+           value: "rds-d9jl3xtniu9x99a4f2o-mysql-ap-southeast-5.exops.my.id"
          - name: MYSQL_USERNAME
-           value: "aimpsu"
+           value: "iamspu"
          - name: MYSQL_PASSWORD
            value: "Akbarakbar@99"
          - name: MYSQL_PORT
