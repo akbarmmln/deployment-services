@@ -3,11 +3,13 @@ kind: Service
 metadata:
   name: msposyandu
   namespace: sit
+  labels:
+    app: msposyandu
 spec:
   selector:
     app: msposyandu
   type: ClusterIP
   ports:
   - protocol: TCP
-    port: 8099
+    port: 80
     targetPort: 8099
