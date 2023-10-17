@@ -26,6 +26,7 @@ spec:
       containers:
       - name: msposyandu
         image: taufik90/msposyandu:5
+        imagePullPolicy: Always
         ports:
         - containerPort: 8099
         livenessProbe:
