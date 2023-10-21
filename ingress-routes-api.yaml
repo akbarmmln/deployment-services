@@ -7,8 +7,12 @@ metadata:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/rewrite-target: /api/$2
 spec:
+  tls:
+  - hosts:
+    - api.exops.my.id
+    secretName: server-tls
   rules:
-  - host: api.paiops.xyz
+  - host: api.exops.my.id
     http:
       paths:
       - path: /ms-posyandu/api(/|$)(.*)
@@ -17,5 +21,5 @@ spec:
           service:
             name: msposyandu
             port:
-              number: 8099
+              number: 80
   ingressClassName: nginx
