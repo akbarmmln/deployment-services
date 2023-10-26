@@ -1,0 +1,23 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: vs-sit-istio-svc
+  namespace: sit
+spec:
+  gateways:
+  - sit/mesh-gateway
+  hosts:
+  - istio-sit.exops.my.id
+  http:
+  - match:
+    - uri:
+        prefix: /ms-posyandu
+    name: msposyandu
+    rewrite:
+      uri: /api/v1
+    route:
+    - destination:
+        host: msposyandu.sit.svc.cluster.local
+        port:
+          number: 80
+    timeout: 120s
