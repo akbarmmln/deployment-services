@@ -1,0 +1,19 @@
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: mesh-gateway-kiali-dashboard
+  namespace: istio-system
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - hosts:
+    - kiali-dashboard.exops.my.id
+    port:
+      name: https
+      number: 443
+      protocol: HTTPS
+    tls:
+      mode: SIMPLE
+      privateKey: /etc/istio/ingressgateway-certs/tls.key
+      serverCertificate: /etc/istio/ingressgateway-certs/tls.crt
