@@ -1,0 +1,16 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: vs-sit-kiali-dashboard
+  namespace: istio-system
+spec:
+  hosts:
+    - kiali-dashboard.exops.my.id
+  gateways:
+    - istio-system/mesh-gateway-kiali-dashboard
+  http:
+    - route:
+        - destination:
+            host: kiali.istio-system.svc.cluster.local
+            port:
+              number: 20001
