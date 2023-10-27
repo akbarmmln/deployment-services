@@ -11,6 +11,14 @@ spec:
   servers:
   - hosts:
     - istio-sit.exops.my.id
+    - kube-dashboard.exops.my.id
+    port:
+      name: http
+      number: 80
+      protocol: HTTP
+  - hosts:
+    - istio-sit.exops.my.id
+    - kube-dashboard.exops.my.id
     port:
       name: https
       number: 443
