@@ -1,0 +1,21 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: vs-sit-kube-dashboard
+  namespace: kubernetes-dashboard
+spec:
+  hosts:
+  - kube-dashboard.exops.my.id
+  gateways:
+  - kubernetes-dashboard/mesh-gateway-kube-dashboard
+  http:
+  tls:
+  - match:
+    - port: 443
+      sniHosts:
+      - kube-dashboard.exops.my.id
+    route:
+    - destination:
+        host: kubernetes-dashboard.kubernetes-dashboard.svc.cluster.local
+        port:
+          number: 443
