@@ -1,0 +1,17 @@
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: mesh-gateway-kube-dashboard
+  namespace: kubernetes-dashboard
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - hosts:
+    - kube-dashboard.exops.my.id
+    port:
+      name: https
+      number: 443
+      protocol: HTTPS
+    tls:
+      mode: PASSTHROUGH
