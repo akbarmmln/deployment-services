@@ -1,3 +1,0 @@
-https://github.com/kubernetes/ingress-nginx/tree/main
-
-kubectl apply -f /deploy/static/provider/baremetal/deploy.yaml

@@ -1,0 +1,18 @@
+//set up ingress nginx
+https://github.com/kubernetes/ingress-nginx/tree/main
+kubectl apply -f /deploy/static/provider/baremetal/deploy.yaml
+
+//set up istio
+curl -L https://istio.io/downloadIstio | sh -
+cd istio-1.19.3
+export PATH=$PWD/bin:$PATH
+istioctl install --set profile=demo -y
+
+//labelling istio
+kubectl label namespace sit istio-injection=enabled
+
+//remove labelling istio
+kubectl label namespace sit istio-injection-
+
+//show label namespace
+kubectl get ns --show-labels
