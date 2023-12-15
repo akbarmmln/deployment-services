@@ -20,5 +20,6 @@ kubectl label namespace sit istio-injection-
 kubectl get ns --show-labels
 
 //for k3s
+sudo yum install https://rpm.rancher.io/k3s/stable/common/centos/8/noarch/
 opsi 1 -> export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 opsi 2 -> kubectl config view --raw > ~/.kube/config
