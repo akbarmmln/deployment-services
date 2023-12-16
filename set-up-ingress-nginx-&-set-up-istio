@@ -20,6 +20,6 @@ kubectl label namespace sit istio-injection-
 kubectl get ns --show-labels
 
 //for k3s
-mkdir /root/.kube
-opsi 1 -> export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
-opsi 2 -> kubectl config view --raw > ~/.kube/config
+step 1 -> mkdir /root/.kube
+step 2 -> export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+step 3 -> kubectl config view --raw > ~/.kube/config
