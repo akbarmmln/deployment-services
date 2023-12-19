@@ -24,3 +24,9 @@ step 1 -> mkdir /root/.kube
 step 2 -> export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 step 3 -> kubectl config view --raw > ~/.kube/config
 step 4 -> systemctl restart k3s
+
+//uninstall k3s master
+/usr/local/bin/k3s-uninstall.sh
+
+//uninstall k3s node
+/usr/local/bin/k3s-agent-uninstall.sh
