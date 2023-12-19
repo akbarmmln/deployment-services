@@ -28,7 +28,7 @@ step 4 -> systemctl restart k3s
 //uninstall k3s master
 /usr/local/bin/k3s-uninstall.sh
 
-//uninstall k3s node
+//uninstall k3s worker
 /usr/local/bin/k3s-agent-uninstall.sh
 
 //remove istio
