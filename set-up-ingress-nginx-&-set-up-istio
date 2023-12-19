@@ -30,3 +30,8 @@ step 4 -> systemctl restart k3s
 
 //uninstall k3s node
 /usr/local/bin/k3s-agent-uninstall.sh
+
+
+//remove istio
+-> istioctl manifest generate --set profile=demo | kubectl delete --ignore-not-found=true -f -
+-> istioctl uninstall --revision=demo
