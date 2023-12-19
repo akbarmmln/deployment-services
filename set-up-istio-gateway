@@ -1,4 +1,4 @@
---> kubectl create secret tls istio-ingressgateway-certs -n istio-system --key client.key --cert client.crt
+--> kubectl create secret tls istio-ingressgateway-certs -n istio-system --key tls.key --cert tls.crt
 
 apiVersion: networking.istio.io/v1beta1
 kind: Gateway
