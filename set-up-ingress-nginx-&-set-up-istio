@@ -1,6 +1,10 @@
 https://gitlab.com/cloud-versity/rancher-k3s-first-steps -> install k3s kubernetes
 
 //set up ingress nginx
+kubectl create secret tls server-tls \
+    --namespace sit \
+    --key cert.key \
+    --cert cert.crt
 https://github.com/kubernetes/ingress-nginx/tree/main
 kubectl apply -f /deploy/static/provider/baremetal/deploy.yaml
 
