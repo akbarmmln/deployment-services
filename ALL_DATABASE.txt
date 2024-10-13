@@ -1,0 +1,360 @@
+DATABASE [ms_account, ms_auth, ms_control_panel, ms_payment]
+
+CREATE TABLE ms_account."adr_account_Pwf0uKJu" (
+  "id" varchar(100) NOT NULL,
+  "created_dt" datetime(3) DEFAULT NULL,
+  "created_by" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "modified_dt" datetime(3) DEFAULT NULL,
+  "modified_by" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "is_deleted" tinyint(1) DEFAULT NULL,
+  "nama" varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  "kk" varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  "mobile_number" varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  "email" varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  "alamat" longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  "blok" varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  "nomor_rumah" varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  "rt" varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  "rw" varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  PRIMARY KEY ("id"),
+  KEY "adr_account_202407_kk_IDX" ("kk")
+);
+
+CREATE TABLE ms_auth."adr_auth" (
+  "id" varchar(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  "created_dt" datetime(3) DEFAULT NULL,
+  "created_by" varchar(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "modified_dt" datetime(3) DEFAULT NULL,
+  "modified_by" varchar(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "is_deleted" tinyint(1) DEFAULT NULL,
+  "account_id" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "code" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "type" varchar(30) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "validate" tinyint(1) DEFAULT NULL,
+  PRIMARY KEY ("id"),
+  KEY "adr_auth_account_id_IDX" ("account_id")
+);
+
+CREATE TABLE ms_auth."adr_login_Pwf0uKJu" (
+  "id" varchar(100) NOT NULL,
+  "created_dt" datetime(3) DEFAULT NULL,
+  "created_by" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "modified_dt" datetime(3) DEFAULT NULL,
+  "modified_by" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "is_deleted" tinyint(1) DEFAULT NULL,
+  "account_id" varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  "pin" varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  "available_counter" tinyint(1) DEFAULT NULL,
+  "next_available" datetime DEFAULT NULL,
+  "blocked" tinyint(1) DEFAULT NULL,
+  PRIMARY KEY ("id"),
+  KEY "adr_login_Pwf0uKJu_account_id_IDX" ("account_id")
+);
+
+CREATE TABLE ms_auth."adr_verifikasi" (
+  "kk" varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  "account_id" varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  "organitation_id" varchar(100) DEFAULT NULL,
+  "position_id" varchar(100) DEFAULT NULL,
+  "is_registered" tinyint DEFAULT NULL,
+  PRIMARY KEY ("kk"),
+  KEY "adr_verifikasi_organitation_id_IDX" ("organitation_id"),
+  KEY "adr_verifikasi_account_id_IDX" ("account_id")
+);
+
+CREATE TABLE ms_control_panel."adr_collection_organitation" (
+  "id" varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  "created_dt" datetime(3) DEFAULT NULL,
+  "created_by" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "modified_dt" datetime(3) DEFAULT NULL,
+  "modified_by" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "is_deleted" tinyint(1) DEFAULT NULL,
+  "org_name" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "org_rt" varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  "org_rw" varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  PRIMARY KEY ("id")
+);
+
+CREATE TABLE ms_control_panel."adr_collection_setup" (
+  "id" varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  "org_id" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "jenis_iuran" varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  "bulan_implementasi" varchar(10) DEFAULT NULL,
+  "tahun_implementasi" varchar(10) DEFAULT NULL,
+  "status" tinyint(1) DEFAULT NULL,
+  "is_deleted" tinyint(1) DEFAULT NULL,
+  "logging_id" varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  "tagihan" decimal(24,2) DEFAULT NULL,
+  PRIMARY KEY ("id"),
+  KEY "adr_collection_setup_org_id_IDX" ("org_id"),
+  KEY "adr_collection_setup_tahun_implementasi_IDX" ("tahun_implementasi")
+);
+
+CREATE TABLE ms_control_panel."adr_logging" (
+  "id" varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  "logging_id" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "aktivitas" longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+  "created_dt" datetime(3) DEFAULT NULL,
+  PRIMARY KEY ("id")
+);
+
+CREATE TABLE ms_payment."adr_va" (
+  "id" varchar(100) NOT NULL,
+  "created_dt" datetime(3) DEFAULT NULL,
+  "created_by" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "modified_dt" datetime(3) DEFAULT NULL,
+  "modified_by" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "is_deleted" tinyint(1) DEFAULT NULL,
+  "va_number" varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  "balance" decimal(24,2) DEFAULT '0.00',
+  "account_id" varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  PRIMARY KEY ("id"),
+  KEY "adr_va_va_number_IDX" ("va_number"),
+  KEY "adr_va_account_id_IDX" ("account_id")
+);
+
+CREATE TABLE ms_payment."payment_invoicing_2024" (
+  "id" varchar(100) NOT NULL,
+  "created_dt" datetime(3) DEFAULT NULL,
+  "created_by" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "modified_dt" datetime(3) DEFAULT NULL,
+  "modified_by" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "is_deleted" tinyint(1) DEFAULT NULL,
+  "order_id" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "account_id" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "transaction_id" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "merchant_id" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "transaction_time" datetime(3) DEFAULT NULL,
+  "expiry_time" datetime(3) DEFAULT NULL,
+  "transaction_status" varchar(100) DEFAULT NULL,
+  "gross_amount" decimal(24,2) DEFAULT NULL,
+  "net_amount" decimal(24,2) DEFAULT NULL,
+  "currency" varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "va_numbers" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "store" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "transaction_type" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "user_transaction_id" varchar(100) DEFAULT NULL,
+  "qr_string" longtext,
+  "qr_url" longtext,
+  PRIMARY KEY ("id"),
+  KEY "payment_invoicing_2024_order_id_IDX" ("order_id"),
+  KEY "payment_invoicing_2024_account_id_IDX" ("account_id"),
+  KEY "payment_invoicing_2024_transaction_id_IDX" ("transaction_id"),
+  KEY "payment_invoicing_2024_va_numbers_IDX" ("va_numbers")
+);
+
+CREATE TABLE ms_payment."pembayaran_ipl_2024" (
+  "id" varchar(100) NOT NULL,
+  "created_dt" datetime(3) DEFAULT NULL,
+  "created_by" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "modified_dt" datetime(3) DEFAULT NULL,
+  "modified_by" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "is_deleted" tinyint(1) DEFAULT NULL,
+  "account_id" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "pembayaran_bulan" tinyint DEFAULT NULL,
+  "detail_pembayaran" longtext CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci,
+  "jumlah_tagihan" decimal(24,2) DEFAULT NULL,
+  "referensi" varchar(100) DEFAULT NULL,
+  "pembayaran_susulan" tinyint DEFAULT '0',
+  PRIMARY KEY ("id"),
+  KEY "pembayaran_ipl_2024_account_id_IDX" ("account_id"),
+  KEY "pembayaran_ipl_2024_referensi_IDX" ("referensi")
+);
+
+CREATE TABLE ms_payment."user_transaction_p202410" (
+  "id" varchar(100) NOT NULL,
+  "created_dt" datetime(3) DEFAULT NULL,
+  "created_by" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "modified_dt" datetime(3) DEFAULT NULL,
+  "modified_by" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "is_deleted" tinyint(1) DEFAULT NULL,
+  "request_id" varchar(100) DEFAULT NULL,
+  "account_id" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "amount" decimal(24,2) DEFAULT NULL,
+  "transaction_type" varchar(10) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "state" longtext CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci,
+  "payload" longtext,
+  "status" tinyint(1) DEFAULT NULL,
+  "partition" varchar(10) DEFAULT NULL,
+  "publish" tinyint(1) DEFAULT '1',
+  PRIMARY KEY ("id"),
+  KEY "user_transaction_p202408_request_id_IDX" ("request_id"),
+  KEY "user_transaction_p202408_account_id_IDX" ("account_id")
+);
+
+DELIMITER //
+CREATE PROCEDURE createRegisterTables(IN newTableName VARCHAR(255), IN tableNames JSON)
+BEGIN
+    DECLARE currentTableName VARCHAR(255);
+    DECLARE numTables INT;
+    DECLARE dbone VARCHAR(255);
+    DECLARE dbtwo VARCHAR(255);
+    DECLARE tableOne VARCHAR(255);
+    DECLARE tableTwo VARCHAR(255);
+	DECLARE sqlQuery1 TEXT;
+	DECLARE sqlQuery2 TEXT;
+    DECLARE sqlQuery3 TEXT;
+    DECLARE sqlQueryAttr TEXT;
+    DECLARE sqlQueryAttrFinal TEXT;
+
+    SET @sqlQuery1:= CONCAT('CREATE TABLE IF NOT EXISTS ms_account.adr_account_', newTableName, ' (
+        id varchar(100) NOT NULL,
+        created_dt datetime(3) DEFAULT NULL,
+        created_by varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+        modified_dt datetime(3) DEFAULT NULL,
+        modified_by varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+        is_deleted tinyint(1) DEFAULT NULL,
+        nama varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+        kk varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+        mobile_number varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+        email varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+        alamat longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
+        blok varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+        nomor_rumah varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+        rt varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+        rw varchar(10) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+        PRIMARY KEY (id),
+        KEY adr_account_202407_kk_IDX (kk)
+    )');
+    
+    SET @sqlQuery2:= CONCAT('CREATE TABLE IF NOT EXISTS ms_auth.adr_login_', newTableName, ' (
+        id varchar(100) NOT NULL,
+        created_dt datetime(3) DEFAULT NULL,
+        created_by varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+        modified_dt datetime(3) DEFAULT NULL,
+        modified_by varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+        is_deleted tinyint(1) DEFAULT NULL,
+        account_id varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+        pin varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+        available_counter tinyint(1) DEFAULT NULL,
+        next_available datetime DEFAULT NULL,
+        blocked tinyint(1) DEFAULT NULL,
+        PRIMARY KEY (id),
+        KEY adr_login_Pwf0uKJu_account_id_IDX (account_id)
+    )');
+
+    SET @ins:= 0;
+    SET @dbone:= 'ms_account';
+    SET @dbtwo:= 'ms_auth';
+    SET @numTables:= JSON_LENGTH(tableNames);
+    SET @tableTwo:= CONCAT(@dbtwo, '.', 'adr_verifikasi');
+    SET @sqlQuery3:= 'CREATE OR REPLACE VIEW ms_account.allAccountsNew AS ';
+    SET @sqlQueryAttrFinal:= '';
+
+   -- Prepare and execute the first query
+    PREPARE stmt1 FROM @sqlQuery1;
+    EXECUTE stmt1;
+    DEALLOCATE PREPARE stmt1;
+
+    -- Prepare and execute the second query
+    PREPARE stmt2 FROM @sqlQuery2;
+    EXECUTE stmt2;
+    DEALLOCATE PREPARE stmt2;
+
+    WHILE @ins < @numTables DO
+        SET @currentTableName:= JSON_EXTRACT(tableNames, CONCAT('$[', @ins, ']'));
+        SET @tableOne:= CONCAT(@dbone, '.', @currentTableName);
+
+        SET @sqlQueryAttr:= CONCAT(@currentTableName, '.created_dt as created_dt, ');
+        SET @sqlQueryAttr:= CONCAT(@sqlQueryAttr, @currentTableName, '.nama as nama, ');
+        SET @sqlQueryAttr:= CONCAT(@sqlQueryAttr, @currentTableName, '.kk as kk, ');
+        SET @sqlQueryAttr:= CONCAT(@sqlQueryAttr, @currentTableName, '.mobile_number as mobile_number, ');
+        SET @sqlQueryAttr:= CONCAT(@sqlQueryAttr, @currentTableName, '.email as email, ');
+        SET @sqlQueryAttr:= CONCAT(@sqlQueryAttr, @currentTableName, '.alamat as alamat, ');
+        SET @sqlQueryAttr:= CONCAT(@sqlQueryAttr, @currentTableName, '.blok as blok, ');
+        SET @sqlQueryAttr:= CONCAT(@sqlQueryAttr, @currentTableName, '.nomor_rumah as nomor_rumah, ');
+        SET @sqlQueryAttr:= CONCAT(@sqlQueryAttr, @currentTableName, '.rt as rt, ');
+        SET @sqlQueryAttr:= CONCAT(@sqlQueryAttr, @currentTableName, '.rw as rw, ');
+        SET @sqlQueryAttr:= CONCAT(@sqlQueryAttr, 'adr_verifikasi.organitation_id as organitation_id, ');
+        SET @sqlQueryAttr:= CONCAT(@sqlQueryAttr, 'adr_verifikasi.position_id as position_id');
+        SET @sqlQueryAttrFinal:= CONCAT(@sqlQueryAttrFinal, 'SELECT ', @sqlQueryAttr, ' FROM ', @tableOne, ' JOIN ', @tableTwo, ' ON ', @currentTableName, '.id = adr_verifikasi.account_id ');
+        
+        IF @ins < @numTables - 1 THEN
+            SET @sqlQueryAttrFinal:= CONCAT(@sqlQueryAttrFinal, 'UNION ALL ');
+        END IF;
+
+        SET @ins:= @ins + 1;
+    END WHILE;
+
+    SET @sqlQuery3:= CONCAT(@sqlQuery3, @sqlQueryAttrFinal);
+
+    -- Prepare and execute the second query
+    PREPARE stmt3 FROM @sqlQuery3;
+    EXECUTE stmt3;
+    DEALLOCATE PREPARE stmt3;
+END //
+DELIMITER ;
+
+
+DELIMITER //
+CREATE DEFINER="avnadmin"@"%" PROCEDURE "allAccount"(IN tableNames JSON, IN orgID VARCHAR(255))
+BEGIN
+    DECLARE ins INT;
+    DECLARE numTables INT;
+    DECLARE currentTableName VARCHAR(255);
+    DECLARE sqlQuery TEXT;
+    DECLARE sqlQueryAttr TEXT;
+    DECLARE dbone VARCHAR(255);
+    DECLARE dbtwo VARCHAR(255);
+    DECLARE tableOne VARCHAR(255);
+    DECLARE tableTwo VARCHAR(255);
+
+    -- Get the number of tables from the JSON array
+    SET @dbone:= 'ms_account';
+    SET @dbtwo:= 'ms_auth';
+    SET @ins:= 0;
+    SET @numTables:= JSON_LENGTH(tableNames);
+    SET @tableTwo:= CONCAT(@dbtwo, '.', 'adr_verifikasi');
+
+    -- Initialize the dynamic SQL query
+    SET @sqlQuery:= '';
+   
+    -- Loop through the JSON array and build the UNION ALL query
+    WHILE @ins < @numTables DO
+        -- Extract the table name from the JSON array
+        SET @currentTableName:= JSON_EXTRACT(tableNames, CONCAT('$[', @ins, ']'));
+        SET @tableOne:= CONCAT(@dbone, '.', @currentTableName);
+       
+        -- Append the SELECT statement for the current table
+        SET @sqlQueryAttr:= CONCAT(@currentTableName, '.created_dt as created_dt, ');
+        SET @sqlQueryAttr:= CONCAT(@sqlQueryAttr, @currentTableName, '.nama as nama, ');
+        SET @sqlQueryAttr:= CONCAT(@sqlQueryAttr, @currentTableName, '.kk as kk, ');
+        SET @sqlQueryAttr:= CONCAT(@sqlQueryAttr, @currentTableName, '.mobile_number as mobile_number, ');
+        SET @sqlQueryAttr:= CONCAT(@sqlQueryAttr, @currentTableName, '.email as email, ');
+        SET @sqlQueryAttr:= CONCAT(@sqlQueryAttr, @currentTableName, '.alamat as alamat, ');
+        SET @sqlQueryAttr:= CONCAT(@sqlQueryAttr, @currentTableName, '.blok as blok, ');
+        SET @sqlQueryAttr:= CONCAT(@sqlQueryAttr, @currentTableName, '.nomor_rumah as nomor_rumah, ');
+        SET @sqlQueryAttr:= CONCAT(@sqlQueryAttr, @currentTableName, '.rt as rt, ');
+        SET @sqlQueryAttr:= CONCAT(@sqlQueryAttr, @currentTableName, '.rw as rw, ');
+        SET @sqlQueryAttr:= CONCAT(@sqlQueryAttr, 'adr_verifikasi.organitation_id as organitation_id, ');
+        SET @sqlQueryAttr:= CONCAT(@sqlQueryAttr, 'adr_verifikasi.position_id as position_id');
+        SET @sqlQuery:= CONCAT(@sqlQuery, 'SELECT ', @sqlQueryAttr, ' FROM ', @tableOne, ' JOIN ', @tableTwo, ' ON ', @currentTableName, '.id = adr_verifikasi.account_id ');
+		SET @sqlQuery:= CONCAT(@sqlQuery, 'WHERE organitation_id = \'', orgID, '\' ');
+
+        -- If this is not the last table, add UNION ALL
+        IF @ins < @numTables - 1 THEN
+            SET @sqlQuery:= CONCAT(@sqlQuery, 'UNION ALL ');
+        END IF;
+
+        -- Increment the counter
+        SET @ins:= @ins + 1;
+    END WHILE;
+
+    -- Add ORDER BY clause   
+    SET @sqlQuery:= CONCAT(@sqlQuery, ' ORDER BY created_dt DESC');
+    SELECT @sqlQuery;
+   
+    -- Prepare and execute the dynamic SQL
+    PREPARE stmt FROM @sqlQuery;
+    EXECUTE stmt;
+    DEALLOCATE PREPARE stmt;
+END //
+DELIMITER ;
+
+
+CREATE OR REPLACE VIEW ms_account.allAccounts AS
+SELECT adr_account_Pwf0uKJu.created_dt as created_dt, adr_account_Pwf0uKJu.nama as nama, adr_account_Pwf0uKJu.kk as kk, 
+adr_account_Pwf0uKJu.mobile_number as mobile_number, adr_account_Pwf0uKJu.email as email, adr_account_Pwf0uKJu.alamat as alamat, 
+adr_account_Pwf0uKJu.blok as blok, adr_account_Pwf0uKJu.nomor_rumah as nomor_rumah, adr_account_Pwf0uKJu.rt as rt, 
+adr_account_Pwf0uKJu.rw as rw, adr_verifikasi.organitation_id as organitation_id, adr_verifikasi.position_id as position_id
+FROM ms_account.adr_account_Pwf0uKJu JOIN ms_auth.adr_verifikasi ON  adr_account_Pwf0uKJu.id = adr_verifikasi.account_id
