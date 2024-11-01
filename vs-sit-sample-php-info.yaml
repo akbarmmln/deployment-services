@@ -9,11 +9,7 @@ spec:
   gateways:
   - sit/mesh-gateway-sample-php-info
   http:
-    - match:
-        - port: 443  # Specify the port if your service is exposed on 443
-          tls:
-            mode: SIMPLE  # Use SIMPLE for basic TLS termination
-      route:
+    - route:
         - destination:
             host: sample-php-info-svc.sit.svc.cluster.local
             port:
