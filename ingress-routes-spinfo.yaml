@@ -1,20 +1,25 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
+  name: ingress-routes-api-samplephpinfo
+  namespace: sit
   annotations:
     nginx.ingress.kubernetes.io/app-root: /sample-php-info
-  name: ingress-routes-spinfo
-  namespace: sit
+    nginx.ingress.kubernetes.io/ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
 spec:
+  tls:
+    - hosts:
+        - mtfa.my.id
+      secretName: server-tls
   rules:
-  - host: sp-info.paiops.xyz
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: sample-php-info-svc
-            port:
-              number: 80
-  ingressClassName: nginx
+    - host: mtfa.my.id
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: sample-php-info-svc
+                port:
+                  number: 80
