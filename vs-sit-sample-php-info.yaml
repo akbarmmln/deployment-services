@@ -5,12 +5,15 @@ metadata:
   namespace: sit
 spec:
   hosts:
-  - mtfa.my.id
+  - wev.mtfa.my.id
   gateways:
-  - sit/mesh-gateway-sample-php-info
+  - mesh-gateway-sample-php-info
   http:
-    - route:
-        - destination:
-            host: sample-php-info-svc.sit.svc.cluster.local
-            port:
-              number: 80
+  - match:
+      - uri:
+          prefix: /
+    route:
+    - destination:
+        host: sample-php-info-svc.sit.svc.cluster.local
+        port:
+          number: 80
