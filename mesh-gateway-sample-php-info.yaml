@@ -13,6 +13,6 @@ spec:
       protocol: HTTPS
     tls:
       mode: SIMPLE
-      credentialName: istio-ingressgateway-certs  # TLS secret for the certificate
+      credentialName: istio-ingressgateway-certs
     hosts:
     - mtfa.my.id
