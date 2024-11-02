@@ -1,19 +1,19 @@
-apiVersion: networking.istio.io/v1beta1
+apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
   name: vs-sit-sample-php-info
   namespace: sit
 spec:
   hosts:
-  - wev.mtfa.my.id
+    - wev.mtfa.my.id
   gateways:
-  - mesh-gateway-sample-php-info
+    - sit/mesh-gateway-sample-php-info
   http:
-  - match:
-      - uri:
-          prefix: /
-    route:
-    - destination:
-        host: sample-php-info-svc.sit.svc.cluster.local
-        port:
-          number: 80
+    - match:
+        - uri:
+            prefix: "/"
+      route:
+        - destination:
+            host: sample-php-info-svc.sit.svc.cluster.local
+            port:
+              number: 80
