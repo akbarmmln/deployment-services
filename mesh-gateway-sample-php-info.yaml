@@ -1,4 +1,4 @@
-apiVersion: networking.istio.io/v1beta1
+apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
   name: mesh-gateway-sample-php-info
@@ -7,12 +7,20 @@ spec:
   selector:
     istio: ingressgateway
   servers:
-  - port:
-      number: 443
-      name: https
-      protocol: HTTPS
-    tls:
-      mode: SIMPLE
-      credentialName: istio-ingressgateway-certs
-    hosts:
-    - mtfa.my.id
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - wev.mtfa.my.id
+      tls:
+        httpsRedirect: true
+    - port:
+        number: 443
+        name: https
+        protocol: HTTPS
+      hosts:
+        - wev.mtfa.my.id
+      tls:
+        mode: SIMPLE
+        credentialName: server-tls
