@@ -39,6 +39,8 @@ step 4 -> systemctl restart k3s
 -> istioctl manifest generate --set profile=demo | kubectl delete --ignore-not-found=true -f -
 -> istioctl uninstall --revision=default
 
+https://github.com/istio/istio/tree/release-1.23
+
 //single node k8s
 -> kubectl describe node <nodename> | grep Taints
 -> kubectl taint node <nodename> node-role.kubernetes.io/master:NoSchedule-
