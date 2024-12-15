@@ -6,6 +6,10 @@ vm3 192.168.0.4 -> Data Node
 vm4 192.168.0.5 -> SQL Node
 vm5 192.168.0.6 -> SQL Node
 
+IN ALL NODE
+-> sudo swapoff -a
+-> sudo sed -i '/swap/d' /etc/fstab
+
 =====================================================================================
 Step 1 — Installing and Configuring the Cluster Manager (VM1)
 -> wget https://dev.mysql.com/get/Downloads/MySQL-Cluster-7.6/mysql-cluster-community-management-server_7.6.6-1ubuntu18.04_amd64.deb
