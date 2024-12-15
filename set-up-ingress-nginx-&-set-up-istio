@@ -26,9 +26,14 @@ follow intructions of installing docker
 -> sudo systemctl restart containerd
 ==============================
 follow intructions of installing kubeadm, kubelet and kubectl
-
 ============================== END OF ==============================
 
+============================== START OF ==============================
+install the local-provisioner
+
+-> kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
+-> kubectl get pods -n local-path-storage
+============================== END OF ==============================
 
 https://gitlab.com/cloud-versity/rancher-k3s-first-steps -> install k3s kubernetes
 
