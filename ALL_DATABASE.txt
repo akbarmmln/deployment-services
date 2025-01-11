@@ -1,4 +1,4 @@
-DATABASE [ms_account, ms_auth, ms_control_panel, ms_payment]
+DATABASE [ms_account, ms_auth, ms_control_panel, ms_payment, web-socket]
 
 CREATE TABLE ms_account."adr_account_Pwf0uKJu" (
   "id" varchar(100) NOT NULL,
@@ -62,6 +62,24 @@ CREATE TABLE ms_auth."adr_verifikasi" (
   KEY "adr_verifikasi_account_id_IDX" ("account_id")
 );
 
+CREATE TABLE ms_auth."adr_akses_menu_user" (
+  "id" varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  "account_id" varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  "id_menu" varchar(100) DEFAULT NULL,
+  "is_deleted" tinyint(1) DEFAULT NULL,
+  PRIMARY KEY ("id")
+);
+
+CREATE TABLE ms_auth."default_menu_position" (
+  "id" varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  "posititon_id" varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  "menu_id" varchar(100) DEFAULT NULL,
+  "menu_name" varchar(100) DEFAULT NULL,
+  "activity_name" varchar(100) DEFAULT NULL,
+  "image" varchar(100) DEFAULT NULL,
+  PRIMARY KEY ("id")
+);
+
 CREATE TABLE ms_control_panel."adr_collection_organitation" (
   "id" varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   "created_dt" datetime(3) DEFAULT NULL,
@@ -95,6 +113,74 @@ CREATE TABLE ms_control_panel."adr_logging" (
   "logging_id" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
   "aktivitas" longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
   "created_dt" datetime(3) DEFAULT NULL,
+  PRIMARY KEY ("id")
+);
+
+CREATE TABLE ms_control_panel."adr_gerbong_details" (
+  "id" bigint NOT NULL AUTO_INCREMENT,
+  "created_dt" datetime(3) DEFAULT NULL,
+  "created_by" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "modified_dt" datetime(3) DEFAULT NULL,
+  "modified_by" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "is_deleted" tinyint(1) DEFAULT NULL,
+  "id_gerbong" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "id_kursi" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "status" tinyint(1) DEFAULT NULL,
+  PRIMARY KEY ("id"),
+  KEY "adr_gerbong_details_id_gerbong_IDX" ("id_gerbong"),
+  KEY "adr_gerbong_details_id_kursi_IDX" ("id_kursi"),
+  KEY "adr_gerbong_details_idgerbong_idkursi_IDX" ("id_gerbong","id_kursi")
+);
+
+CREATE TABLE ms_control_panel."adr_gerbong_kereta" (
+  "id" varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  "created_dt" datetime(3) DEFAULT NULL,
+  "created_by" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "modified_dt" datetime(3) DEFAULT NULL,
+  "modified_by" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "is_deleted" tinyint(1) DEFAULT NULL,
+  "id_kereta" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "nomer_urut" tinyint(1) DEFAULT NULL,
+  "nama_gerbong" varchar(100) DEFAULT NULL,
+  "denah_kursi" varchar(100) DEFAULT NULL,
+  "baris_kursi" tinyint(1) DEFAULT NULL,
+  PRIMARY KEY ("id"),
+  KEY "adr_gerbong_kereta_id_kereta_IDX" ("id_kereta")
+);
+
+CREATE TABLE ms_control_panel."adr_kereta" (
+  "id" varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  "created_dt" datetime(3) DEFAULT NULL,
+  "created_by" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "modified_dt" datetime(3) DEFAULT NULL,
+  "modified_by" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "is_deleted" tinyint(1) DEFAULT NULL,
+  "nama_kereta" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  PRIMARY KEY ("id")
+);
+
+CREATE TABLE ms_control_panel."sys_pref" (
+  "id" varchar(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci NOT NULL,
+  "created_dt" datetime DEFAULT NULL,
+  "created_by" varchar(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "modified_dt" datetime DEFAULT NULL,
+  "modified_by" varchar(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "is_deleted" tinyint(1) DEFAULT NULL,
+  "name" varchar(300) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "value" varchar(300) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  PRIMARY KEY ("id")
+);
+
+CREATE TABLE ms_control_panel."adr_loket_tersedia" (
+  "id" varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  "created_dt" datetime(3) DEFAULT NULL,
+  "created_by" varchar(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "modified_dt" datetime(3) DEFAULT NULL,
+  "modified_by" varchar(64) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "is_deleted" tinyint(1) DEFAULT NULL,
+  "nama_loket" varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
+  "client_topic" varchar(100) DEFAULT NULL,
+  "client_id" varchar(100) DEFAULT NULL,
   PRIMARY KEY ("id")
 );
 
@@ -180,6 +266,17 @@ CREATE TABLE ms_payment."user_transaction_p202410" (
   PRIMARY KEY ("id"),
   KEY "user_transaction_p202408_request_id_IDX" ("request_id"),
   KEY "user_transaction_p202408_account_id_IDX" ("account_id")
+);
+
+CREATE TABLE `web-socket`."adr_connection_table" (
+  "id" varchar(100) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  "created_dt" datetime(3) DEFAULT NULL,
+  "created_by" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "modified_dt" datetime(3) DEFAULT NULL,
+  "modified_by" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  "client_id" varchar(100) CHARACTER SET utf8mb3 COLLATE utf8mb3_general_ci DEFAULT NULL,
+  PRIMARY KEY ("id"),
+  KEY "adr_connection_table_client_id_IDX" ("client_id")
 );
 
 DELIMITER //
