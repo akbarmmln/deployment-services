@@ -6,6 +6,7 @@ vm3 192.168.0.4 -> Data Node
 vm4 192.168.0.5 -> SQL Node
 vm5 192.168.0.6 -> SQL Node
 
+VERSION I :
 IN ALL NODE
 -> sudo swapoff -a
 -> sudo sed -i '/swap/d' /etc/fstab
@@ -16,49 +17,47 @@ Step 1 — Installing and Configuring the Cluster Manager (VM1)
 -> sudo dpkg -i mysql-cluster-community-management-server_7.6.6-1ubuntu18.04_amd64.deb
 -> sudo mkdir /var/lib/mysql-cluster
 -> vi /var/lib/mysql-cluster/config.ini
-
-[ndbd default]
-NoOfReplicas=2
-
-[ndb_mgmd]
-hostname=198.168.0.2
-datadir=/var/lib/mysql-cluster
-
-[ndbd]
-hostname=198.168.0.3
-NodeId=2
-datadir=/usr/local/mysql/data
-
-[ndbd]
-hostname=198.168.0.4
-NodeId=3
-datadir=/usr/local/mysql/data
-
-[mysqld]
-NodeId=4
-hostname=198.168.0.5
-
-[mysqld]
-NodeId=5
-hostname=198.168.0.6
+      [ndbd default]
+      NoOfReplicas=2
+      
+      [ndb_mgmd]
+      hostname=198.168.0.2
+      datadir=/var/lib/mysql-cluster
+      
+      [ndbd]
+      hostname=198.168.0.3
+      NodeId=2
+      datadir=/usr/local/mysql/data
+      
+      [ndbd]
+      hostname=198.168.0.4
+      NodeId=3
+      datadir=/usr/local/mysql/data
+      
+      [mysqld]
+      NodeId=4
+      hostname=198.168.0.5
+      
+      [mysqld]
+      NodeId=5
+      hostname=198.168.0.6
 
 -> ndb_mgmd -f /var/lib/mysql-cluster/config.ini
 -> sudo pkill -f ndb_mgmd
 -> vi /etc/systemd/system/ndb_mgmd.service
-
-[Unit]
-Description=MySQL NDB Cluster Management Server
-After=network.target auditd.service
-
-[Service]
-Type=forking
-ExecStart=/usr/sbin/ndb_mgmd -f /var/lib/mysql-cluster/config.ini
-ExecReload=/bin/kill -HUP $MAINPID
-KillMode=process
-Restart=on-failure
-
-[Install]
-WantedBy=multi-user.target
+      [Unit]
+      Description=MySQL NDB Cluster Management Server
+      After=network.target auditd.service
+      
+      [Service]
+      Type=forking
+      ExecStart=/usr/sbin/ndb_mgmd -f /var/lib/mysql-cluster/config.ini
+      ExecReload=/bin/kill -HUP $MAINPID
+      KillMode=process
+      Restart=on-failure
+      
+      [Install]
+      WantedBy=multi-user.target
 
 -> sudo systemctl daemon-reload
 -> sudo systemctl enable ndb_mgmd
@@ -67,36 +66,34 @@ WantedBy=multi-user.target
 
 =====================================================================================
 Step 2 — Installing and Configuring the Data Nodes (VM2, VM3)
--> wget https://dev.mysql.com/get/Downloads/MySQL-Cluster-7.6/mysql-cluster-community-data-node_7.6.6-1ubuntu18.04_amd64.de
+-> wget https://dev.mysql.com/get/Downloads/MySQL-Cluster-7.6/mysql-cluster-community-data-node_7.6.6-1ubuntu18.04_amd64.deb
 -> sudo apt update
 -> sudo apt install libclass-methodmaker-perl
 -> sudo dpkg -i mysql-cluster-community-data-node_7.6.6-1ubuntu18.04_amd64.deb
 -> /etc/my.cnf
-
-[mysqld]
-ndbcluster
-
-[mysql_cluster]
-ndb-connectstring=192.168.0.2
+      [mysqld]
+      ndbcluster
+      
+      [mysql_cluster]
+      ndb-connectstring=192.168.0.2
 
 -> sudo mkdir -p /usr/local/mysql/data
 -> sudo ndbd
 -> sudo pkill -f ndbd
 -> vi /etc/systemd/system/ndbd.service
-
-[Unit]
-Description=MySQL NDB Data Node Daemon
-After=network.target auditd.service
-
-[Service]
-Type=forking
-ExecStart=/usr/sbin/ndbd
-ExecReload=/bin/kill -HUP $MAINPID
-KillMode=process
-Restart=on-failure
-
-[Install]
-WantedBy=multi-user.target
+      [Unit]
+      Description=MySQL NDB Data Node Daemon
+      After=network.target auditd.service
+      
+      [Service]
+      Type=forking
+      ExecStart=/usr/sbin/ndbd
+      ExecReload=/bin/kill -HUP $MAINPID
+      KillMode=process
+      Restart=on-failure
+      
+      [Install]
+      WantedBy=multi-user.target
 
 -> sudo systemctl daemon-reload
 -> sudo systemctl enable ndbd
@@ -117,12 +114,11 @@ Step 3 — Configuring and Starting the MySQL Server and Client (VM4, VM5)
 -> sudo dpkg -i mysql-cluster-community-server_7.6.6-1ubuntu18.04_amd64.deb
 -> sudo dpkg -i mysql-server_7.6.6-1ubuntu18.04_amd64.deb
 -> vi /etc/mysql/my.cnf
-
-[mysqld]
-ndbcluster
-
-[mysql_cluster]
-ndb-connectstring=192.168.0.2
+      [mysqld]
+      ndbcluster
+      
+      [mysql_cluster]
+      ndb-connectstring=192.168.0.2
 -> sudo systemctl restart mysql
 -> sudo systemctl enable mysql
 
@@ -130,7 +126,6 @@ ndb-connectstring=192.168.0.2
 Step 3 - Verify status cluster (ON SQL NODE -> VM4, VM5)
 -> ndb_mgm
 -> SHOW
-
 
 -> mysql -u root -p 
 -> SHOW ENGINE NDB STATUS
@@ -144,3 +139,107 @@ This query is executed only on one of the SQL nodes
 -> CREATE USER 'devops'@'%' IDENTIFIED BY 'Akbarakbar99';
 -> GRANT ALL PRIVILEGES ON *.* TO 'devops'@'%' WITH GRANT OPTION;
 -> FLUSH PRIVILEGES
+
+VERSION II :
+Step 1 - Terapkan Intallasi dibawah pada semua node
+-> wget "https://dev.mysql.com/get/Downloads/MySQL-Cluster-8.2/mysql-cluster_8.2.0-1ubuntu22.04_amd64.deb-bundle.tar"
+-> mysql; tar -xvf mysql-cluster_8.2.0-1ubuntu22.04_amd64.deb-bundle.tar -C mysql/
+-> cd mysql/
+-> apt install -f ./* -y
+
+Step 2 - Installasi pada Management Node
+-> mkdir -p /var/lib/mysql-cluster
+-> vi /var/lib/mysql-cluster/config.ini
+        [ndbd default]
+        NoOfReplicas=2
+        
+        [ndb_mgmd]
+        NodeId=1
+        hostname=10.10.10.151
+        datadir=/var/lib/mysql-cluster
+        
+        [ndb_mgmd]
+        NodeId=2
+        hostname=10.10.10.152
+        datadir=/var/lib/mysql-cluster
+        
+        [ndbd]
+        NodeId=3
+        hostname=10.10.10.153
+        datadir=/usr/local/mysql/data
+        
+        [ndbd]
+        NodeId=4
+        hostname=10.10.10.154
+        datadir=/usr/local/mysql/data
+        
+        [ndbd]
+        NodeId=5
+        hostname=10.10.10.155
+        datadir=/usr/local/mysql/data
+        
+        [mysqld]
+        NodeId=6
+        hostname=10.10.10.157
+        
+        [mysqld]
+        NodeId=7
+        hostname=10.10.10.158
+
+-> vi /etc/systemd/system/ndb_mgmd.service
+        [Unit]
+        Description=MySQL NDB Cluster Management Server
+        After=network.target auditd.service
+        
+        [Service]
+        Type=forking
+        ExecStart=/usr/sbin/ndb_mgmd -f /var/lib/mysql-cluster/config.ini --initial --reload
+        ExecReload=/bin/kill -HUP $MAINPID
+        KillMode=process
+        Restart=on-failure
+        
+        [Install]
+        WantedBy=multi-user.target
+
+-> sudo systemctl daemon-reload
+-> sudo systemctl enable ndb_mgmd
+-> sudo systemctl start ndb_mgmd
+-> sudo systemctl status ndb_mgmd
+
+Step 2 - Installasi pada Data Node
+-> vi /etc/my.cnf
+      [mysqld]
+      ndbcluster
+
+      [mysql_cluster]
+      ndb-connectstring=10.10.10.151,10.10.10.152
+-> mkdir -p /usr/local/mysql/data
+-> vi /etc/systemd/system/ndbd.service
+      [Unit]
+      Description=MySQL NDB Data Node Daemon
+      After=network.target auditd.service
+      
+      [Service]
+      Type=forking
+      ExecStart=/usr/sbin/ndbd
+      ExecReload=/bin/kill -HUP $MAINPID
+      KillMode=process
+      Restart=on-failure
+      
+      [Install]
+      WantedBy=multi-user.target
+-> sudo systemctl daemon-reload
+-> sudo systemctl enable ndbd
+-> sudo systemctl start ndbd
+-> sudo systemctl status ndbd
+
+Step 3 - Installasi pada SQL Node
+-> vi /etc/mysql/my.cnf
+      [mysqld]
+      ndbcluster
+      default_storage_engine=ndbcluster
+      
+      [mysql_cluster]
+      ndb-connectstring=10.10.10.151,10.10.10.152
+-> sudo systemctl restart mysql
+-> sudo systemctl enable mysql
