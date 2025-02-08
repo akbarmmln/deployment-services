@@ -1,0 +1,110 @@
+HA K8S Cluster
+Prerequisites
+1. 2 master nodes
+2. 2 worker nodes
+3. 1 load balancer node
+===============================================================
+
+Step 1: Prepare the Load Balancer Node (on ha node)
+-> Install HAProxy:
+	sudo apt-get update
+	sudo apt-get install -y haproxy
+
+-> Configure HAProxy: 
+	sudo vi /etc/haproxy/haproxy.cfg
+	
+	frontend kubernetes-frontend
+    		bind *:6443
+    		option tcplog
+    		mode tcp
+    		default_backend kubernetes-backend
+
+	backend kubernetes-backend
+    		mode tcp
+    		balance roundrobin
+    		option tcp-check
+    		server master1 <MASTER1_IP>:6443 check
+    		server master2 <MASTER2_IP>:6443 check
+
+-> Restart HAProxy:
+	sudo systemctl restart haproxy
+
+Step 2: Prepare All Nodes (Install Docker, kubeadm, kubelet, and kubectl)
+	refer to existing documentation
+
+Step 3: Initialize the First Master Node
+-> Initialize the first master node:
+	sudo kubeadm init --control-plane-endpoint "LOAD_BALANCER_IP:6443" --upload-certs --pod-network-cidr=10.244.0.0/16
+
+-> Set up kubeconfig:
+	mkdir -p $HOME/.kube
+	sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+	sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+Step 4: Join the Second & third and etc Master Node
+-> Get the join command and certificate key from the first master node:
+	kubeadm token create --print-join-command --certificate-key $(kubeadm init phase upload-certs --upload-certs | tail -1)
+
+-> Run the join command:
+	sudo kubeadm join LOAD_BALANCER_IP:6443 --token <token> --discovery-token-ca-cert-hash sha256:<hash> --control-plane --certificate-key <certificate-key>
+
+-> Set up kubeconfig:
+	mkdir -p $HOME/.kube
+	sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+	sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+Step 5: Join the Worker Nodes
+-> Get the join command from the first master node:
+	kubeadm token create --print-join-command
+
+-> Run the join command on each worker node:
+	sudo kubeadm join LOAD_BALANCER_IP:6443 --token <token> --discovery-token-ca-cert-hash sha256:<hash>
+
+Verification
+
+Step 1: Install etcdctl (all master node)
+-> Install etcdctl using apt
+	sudo apt-get update
+	sudo apt-get install -y etcd-client
+
+Step 2: Verify Etcd Cluster Health
+-> Check the health of the etcd cluster:
+	ETCDCTL_API=3 etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/peer.crt --key=/etc/kubernetes/pki/etcd/peer.key endpoint health
+
+-> Check the cluster membership:
+	ETCDCTL_API=3 etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/peer.crt --key=/etc/kubernetes/pki/etcd/peer.key member list
+
+Step 3: Verify HAProxy Configuration and Functionality (on ha node)
+-> Configure HAProxy Stats:
+	sudo vi /etc/haproxy/haproxy.cfg
+
+	listen stats
+		bind *:8404
+    		mode http
+    		stats enable
+    		stats uri /
+    		stats refresh 10s
+    		stats admin if LOCALHOST
+
+-> Restart HAProxy:
+	sudo systemctl restart haproxy
+
+-> Check HAProxy Stats:
+	Access the stats page at http://<LOAD_BALANCER_IP>:8404.
+
+Step 4: Test High Availability
+-> Simulate Master Node Failure:
+	Stop the kubelet service and Docker containers on one of the master nodes to simulate a failure
+		sudo systemctl stop kubelet
+		sudo docker stop $(sudo docker ps -q)
+
+-> Verify Cluster Functionality:
+	Check the status of the cluster from a worker node or the remaining master node:
+
+		kubectl get nodes
+		kubectl get pods --all-namespaces
+	The cluster should still show the remaining nodes as Ready, and the Kubernetes API should be accessible.
+
+-> HAProxy Routing:
+	Ensure that HAProxy is routing traffic to the remaining master node. Check the stats page or use curl to test
+		curl -k https://<LOAD_BALANCER_IP>:6443/version
