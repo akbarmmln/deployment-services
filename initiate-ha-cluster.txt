@@ -68,10 +68,10 @@ Step 1: Install etcdctl (all master node)
 	sudo apt-get install -y etcd-client
 
 Step 2: Verify Etcd Cluster Health
--> Check the health of the etcd cluster:
+-> Check the health of the etcd cluster: (master)
 	ETCDCTL_API=3 etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/peer.crt --key=/etc/kubernetes/pki/etcd/peer.key endpoint health
 
--> Check the cluster membership:
+-> Check the cluster membership: (worker)
 	ETCDCTL_API=3 etcdctl --endpoints=https://127.0.0.1:2379 --cacert=/etc/kubernetes/pki/etcd/ca.crt --cert=/etc/kubernetes/pki/etcd/peer.crt --key=/etc/kubernetes/pki/etcd/peer.key member list
 
 Step 3: Verify HAProxy Configuration and Functionality (on ha node)
