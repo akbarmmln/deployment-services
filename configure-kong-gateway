@@ -1,0 +1,37 @@
+curl -Lo kong-enterprise-edition-3.9.0.1.deb "https://packages.konghq.com/public/gateway-39/deb/ubuntu/pool/$(lsb_release -sc)/main/k/ko/kong-enterprise-edition_3.9.0.1/kong-enterprise-edition_3.9.0.1_$(dpkg --print-architecture).deb"
+sudo apt install -y ./kong....
+
+check by -> kong roar
+
+sudo sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+sudo apt update
+sudo apt install postgresql-14
+psql --version
+
+sudo -i -u postgres
+psql
+
+CREATE USER kong;
+CREATE DATABASE kong OWNER kong;
+ALTER USER kong with password 'pss';
+
+sudo cp /etc/kong/kong.conf.default /etc/kong/kong.conf
+
+sudo vi /etc/kong/kong.conf
+#Uncomment this line => #admin_listen = 0.0.0.0:8001 reuseport backlog=16384, 0.0.0.0:8444 http2 ssl reuseport backlog=16384
+#add these line on botton "Shift+G" => 
+ database = postgres  
+ pg_host = 127.0.0.1 
+ pg_port = 5432
+ pg_user = kong
+ pg_password = pss
+ pg_database = kong
+:wq
+
+export KONG_PASSWORD=pss
+
+sudo kong migrations bootstrap -c /etc/kong/kong.conf
+sudo kong start -c /etc/kong/kong.conf
+
+curl -i localhost:8001/status
