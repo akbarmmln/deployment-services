@@ -19,7 +19,8 @@ ALTER USER kong with password 'pss';
 sudo cp /etc/kong/kong.conf.default /etc/kong/kong.conf
 
 sudo vi /etc/kong/kong.conf
-#Uncomment this line => #admin_listen = 0.0.0.0:8001 reuseport backlog=16384, 0.0.0.0:8444 http2 ssl reuseport backlog=16384
+proxy_listen = 0.0.0.0:8000 reuseport backlog=16384, 0.0.0.0:8443 http2 ssl reuseport backlog=16384, 0.0.0.0:80 reuseport backlog=16384, 0.0.0.0:443 http2 ssl reuseport backlog=16384
+admin_listen = 0.0.0.0:8001 reuseport backlog=16384, 0.0.0.0:8444 http2 ssl reuseport backlog=16384
 #add these line on botton "Shift+G" => 
  database = postgres  
  pg_host = 127.0.0.1 
