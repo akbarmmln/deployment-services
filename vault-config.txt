@@ -56,3 +56,7 @@ vault write auth/userpass/users/root \
 vault write auth/userpass/users/devops \
   password="devops" \
   policies="daru-sit-policy"
+
+
+kubectl exec -n vault -it vault-0 -- vault operator init
+kubectl exec -n vault -it vault-0 -- vault operator unseal <key1-5>
