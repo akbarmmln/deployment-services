@@ -3,8 +3,9 @@ helm install vault hashicorp/vault \
   --create-namespace \
   --set injector.enabled=true \
   --set "ui.enabled=true" \
-  --set "server.dev.enabled=true" \
-  --set "server.service.type=LoadBalancer" 
+  --set "server.ha.enabled=true" \
+  --set "server.ha.raft.enabled=true" \
+  --set "server.service.type=LoadBalancer"
 
 apiVersion: v1
 kind: ServiceAccount
