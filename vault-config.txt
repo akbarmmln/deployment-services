@@ -1,0 +1,55 @@
+helm install vault hashicorp/vault \
+  --namespace vault \
+  --create-namespace \
+  --set injector.enabled=true \
+  --set "ui.enabled=true" \
+  --set "server.dev.enabled=true" \
+  --set "server.service.type=LoadBalancer" 
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: vault-account
+  namespace: sit
+
+# superadmin.hcl
+path "*" {
+  capabilities = ["create", "read", "update", "delete", "list", "sudo"]
+}
+
+# daru-sit-policy.hcl
+path "DARU/data/*" {
+  capabilities = ["create", "read", "update", "delete", "list"]
+}
+path "DARU/metadata/*" {
+  capabilities = ["read", "list"]
+}
+
+vault policy write daru-sit-policy ./daru-sit-policy.hacl
+
+vault auth enable -path=kubernetes-daru-nonprod kubernetes
+
+vault write auth/kubernetes-daru-nonprod/config \
+  token_reviewer_jwt="$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" \
+  kubernetes_host="https://https://10.148.0.2:6443" \
+  kubernetes_ca_cert=@/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+
+vault write auth/kubernetes-daru-nonprod/role/daru-sit \
+  bound_service_account_names=vault-account \
+  bound_service_account_namespaces=sit \
+  policies=daru-sit-policy \
+  ttl=24h
+
+
+vault kv put DARU/SIT/msaccount DB_USER="admin" DB_PASS="s3cret"
+
+vault login <ROOT_TOKEN>
+vault secrets list (jika tidak muncul jalankan -> vault secrets enable -path=DARU kv-v2)
+
+vault auth enable userpass
+vault write auth/userpass/users/root \
+  password="root" \
+  policies="superadmin"
+vault write auth/userpass/users/devops \
+  password="devops" \
+  policies="daru-sit-policy"
