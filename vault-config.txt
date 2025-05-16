@@ -45,6 +45,8 @@ vault write auth/userpass/users/devops \
 vault operator init
 vault operator unseal <key1-5>
 
+-> for uninstall -- helm uninstall vault -n vault
+
 -> vault-auth-service-account.yaml
     apiVersion: v1
     kind: ServiceAccount
