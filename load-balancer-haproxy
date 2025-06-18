@@ -1,68 +1,137 @@
 Final haproxy.cfg
 
 global
-    log /dev/log local0
-    log /dev/log local1 notice
+    log stdout local0
+    chroot /var/lib/haproxy
+    stats socket /run/haproxy/admin.sock mode 660 level admin
+    stats timeout 30s
+    user haproxy
+    group haproxy
     daemon
-    maxconn 2048
-    tune.ssl.default-dh-param 2048
-
+    
 defaults
-    log     global
-    mode    http
-    option  httplog
-    option  dontlognull
-    timeout connect 5s
-    timeout client  30s
-    timeout server  30s
-    option  forwardfor
-    http-reuse always
-
-# ====== FRONTEND HTTPS LB ======
-frontend https_in
-    bind *:443 ssl crt /etc/haproxy/certs/new-istio-sit.pem
     mode http
+    log global
+    option httplog
+    option dontlognull
+    option log-health-checks
+    option forwardfor
+    option http-server-close
+    timeout connect 5000ms
+    timeout client 50000ms
+    timeout server 50000ms
+    errorfile 400 /etc/haproxy/errors/400.http
+    errorfile 403 /etc/haproxy/errors/403.http
+    errorfile 408 /etc/haproxy/errors/408.http
+    errorfile 500 /etc/haproxy/errors/500.http
+    errorfile 502 /etc/haproxy/errors/502.http
+    errorfile 503 /etc/haproxy/errors/503.http
+    errorfile 504 /etc/haproxy/errors/504.http
 
-    acl msauth_path path_beg /ms-auth
-    acl msaccount_path path_beg /ms-account
+# Frontend untuk HTTP (redirect ke HTTPS)
+frontend http_frontend
+    bind *:80
+    redirect scheme https code 301 if !{ ssl_fc }
 
-    use_backend backend_msauth if msauth_path
-    use_backend backend_msaccount if msaccount_path
-
-    default_backend backend_msauth
-
-# ====== BACKEND: Gateway GCP & Ali ======
-backend backend_msauth
-    mode http
-    balance roundrobin
-    option httpchk GET /ms-auth/healthcheck/healty
-    http-check expect status 200
+# Frontend untuk HTTPS dengan path-based routing
+frontend https_frontend
+    bind *:443 ssl crt /etc/haproxy/certs/istio-sit.pem alpn h2,http/1.1
+    
+    # Menambahkan header untuk identifikasi load balancer
     http-request del-header X-Forwarded-For
     http-request set-header X-Forwarded-For %[src]
     http-request set-header X-Forwarded-Proto https
     http-request set-header X-Forwarded-Host %[req.hdr(Host)]
     http-request set-header X-Forwarded-Port 443
-    server server1 istiogcp1-sit.tfal.biz.id:443 check inter 5s fall 3 rise 2
+    
+    # ACL untuk host validation
+    acl is_istio_sit hdr(host) -i newistio-sit.tfal.biz.id
+    
+    # ACL untuk path-based routing
+    acl path_ms_auth path_beg /ms-auth
+    acl path_ms_account path_beg /ms-account
+    
+    # Stats page ACL
+    acl is_stats path_beg /haproxy-stats
+    
+    # Routing berdasarkan path
+    use_backend ms_auth_backend if is_istio_sit path_ms_auth
+    use_backend ms_account_backend if is_istio_sit path_ms_account
+    use_backend stats if is_stats
+    
+    # Default backend jika tidak ada path yang cocok
+    default_backend default_backend
 
-backend backend_msaccount
-    mode http
+# Backend untuk ms-auth service
+backend ms_auth_backend
     balance roundrobin
-    option httpchk GET /ms-account/healthcheck/healty
+    option httpchk
+    http-check connect ssl port 443 sni istiogcp1-sit.tfal.biz.id
+    http-check send meth GET uri /ms-auth/healthcheck/healty
     http-check expect status 200
-    http-request del-header X-Forwarded-For
-    http-request set-header X-Forwarded-For %[src]
-    http-request set-header X-Forwarded-Proto https
-    http-request set-header X-Forwarded-Host %[req.hdr(Host)]
-    http-request set-header X-Forwarded-Port 443
-    server server1 istiogcp1-sit.tfal.biz.id:443 check inter 5s fall 3 rise 2
+    
+    # Health check configuration
+    default-server check inter 15s fastinter 3s downinter 8s rise 3 fall 2
+    
+    # Server definitions untuk ms-auth di kedua cluster
+    server server-auth1 istiogcp1-sit.tfal.biz.id:443 ssl verify none check
+    
+    # Logging untuk debugging
+    option log-health-checks
 
-# ====== STATS UI for Monitoring ======
-listen stats
-    bind *:8404
-    mode http
+# Backend untuk ms-account service
+backend ms_account_backend
+    balance roundrobin
+    option httpchk
+    http-check connect ssl port 443 sni istiogcp1-sit.tfal.biz.id
+    http-check send meth GET uri /ms-account/healthcheck/healty
+    http-check expect status 200
+
+    
+    # Health check configuration
+    default-server check inter 15s fastinter 3s downinter 8s rise 3 fall 2
+    
+    # Server definitions untuk ms-account di kedua cluster
+    server server-account1 istiogcp1-sit.tfal.biz.id:443 ssl verify none check
+    
+    # Logging untuk debugging
+    option log-health-checks
+
+# Default backend untuk handle request yang tidak match path tertentu
+backend default_backend
+    balance roundrobin
+    option httpchk GET /healthz/ready
+    http-check expect status 200
+    
+    default-server check inter 10s fastinter 2s downinter 5s rise 3 fall 2
+    
+    # Fallback ke general Istio Gateway health check
+    server server1 istiogcp1-sit.tfal.biz.id:443 ssl verify none check
+
+# Backend untuk statistics
+backend stats
     stats enable
-    stats uri /stats
+    stats uri /haproxy-stats
     stats realm HAProxy\ Statistics
     stats auth admin:admin123
+    stats refresh 30s
+    stats show-node
+    stats show-legends
+
+# Listen block untuk monitoring
+listen stats
+    bind *:8404
+    stats enable
+    stats uri /stats
     stats refresh 10s
     stats admin if TRUE
+    
+# Listen block untuk health check monitoring (opsional)
+listen health_monitor
+    bind *:8405
+    mode http
+    monitor-uri /health
+    
+    # Return 200 jika HAProxy berjalan dengan baik
+    monitor fail if { nbsrv(ms_auth_backend) eq 0 }
+    monitor fail if { nbsrv(ms_account_backend) eq 0 }
