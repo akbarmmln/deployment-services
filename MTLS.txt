@@ -1,9 +1,0 @@
-1. Generate Private Key (client key)
-  openssl genrsa -out client.key 2048
-2. Generate CSR (Certificate Signing Request)
-  openssl req -new -key client.key -out client.csr
-  (Common Name (CN) = nama unik client, contoh: client.myapp.local)
-3. Tandatangani CSR dengan CA (generate client cert)
-  Jika kamu sudah punya CA certificate (ca.crt) dan private key (ca.key), jalankan:
-  openssl x509 -req -in client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out client.crt -days 365
-  Jika belum ikutin petunjuk pada TLS.txt
