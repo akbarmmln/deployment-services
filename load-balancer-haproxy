@@ -21,7 +21,7 @@ defaults
 # ====== FRONTEND HTTPS LB ======
 frontend https_in
     bind *:443 ssl crt /etc/haproxy/certs/istio-sit.pem
-    mode http
+    mode tcp
 
     acl msauth_path path_beg /ms-auth
     acl msaccount_path path_beg /ms-account
@@ -29,37 +29,36 @@ frontend https_in
     use_backend backend_msauth if msauth_path
     use_backend backend_msaccount if msaccount_path
 
-    default_backend backend_msaccount  # fallback
+    default_backend backend_msauth  # fallback
 
-# ====== BACKEND: Gateway GCP & Ali ======
+# ====== BACKEND MSAUTH dengan TCP-CHECK TLS+SNI ======
 backend backend_msauth
-    mode http
+    mode tcp
     balance roundrobin
-    option httpchk GET /ms-auth/healthz
-    http-check expect status 200
+    option tcp-check
 
-    server gcp-masauth istiogcp-sit.mtfa.my.id:443 ssl verify none check inter 2000 fall 2 rise 3
-    server ali-masauth istioali-sit.mtfa.my.id:443 ssl verify none check inter 2000 fall 2 rise 3
+    tcp-check connect ssl sni istiogcp1-sit.tfal.biz.id
+
+    server gcp-masauth1 istiogcp1-sit.tfal.biz.id:443 ssl verify none check inter 5s fall 3 rise 2
 
     http-request del-header X-Forwarded-For
     http-request set-header X-Forwarded-For %[src]
     http-request set-header X-Forwarded-Proto https
     http-request set-header X-Forwarded-Host %[req.hdr(Host)]
-
+# ====== BACKEND MSACCOUNT dengan TCP-CHECK TLS+SNI ======
 backend backend_msaccount
-    mode http
+    mode tcp
     balance roundrobin
-    option httpchk GET /ms-account/healthz
-    http-check expect status 200
+    option tcp-check
 
-    server gcp-msaccount istiogcp-sit.mtfa.my.id:443 ssl verify none check inter 2000 fall 2 rise 3
-    server ali-msaccount istioali-sit.mtfa.my.id:443 ssl verify none check inter 2000 fall 2 rise 3
+    tcp-check connect ssl sni istiogcp1-sit.tfal.biz.id
+
+    server gcp-msaccount1 istiogcp1-sit.tfal.biz.id:443 ssl verify none check inter 5s fall 3 rise 2
 
     http-request del-header X-Forwarded-For
     http-request set-header X-Forwarded-For %[src]
     http-request set-header X-Forwarded-Proto https
     http-request set-header X-Forwarded-Host %[req.hdr(Host)]
-
 # ====== STATS UI for Monitoring ======
 listen stats
     bind *:8404
