@@ -1,0 +1,72 @@
+Final haproxy.cfg
+
+global
+    log /dev/log local0
+    log /dev/log local1 notice
+    daemon
+    maxconn 2048
+    tune.ssl.default-dh-param 2048
+
+defaults
+    log     global
+    mode    http
+    option  httplog
+    option  dontlognull
+    timeout connect 5s
+    timeout client  30s
+    timeout server  30s
+    option  forwardfor
+    http-reuse always
+
+# ====== FRONTEND HTTPS LB ======
+frontend https_in
+    bind *:443 ssl crt /etc/haproxy/certs/istio-sit.pem
+    mode http
+
+    acl msauth_path path_beg /ms-auth
+    acl msaccount_path path_beg /ms-account
+
+    use_backend backend_msauth if msauth_path
+    use_backend backend_msaccount if msaccount_path
+
+    default_backend backend_msaccount  # fallback
+
+# ====== BACKEND: Gateway GCP & Ali ======
+backend backend_msauth
+    mode http
+    balance roundrobin
+    option httpchk GET /ms-auth/healthz
+    http-check expect status 200
+
+    server gcp-masauth istiogcp-sit.mtfa.my.id:443 ssl verify none check inter 2000 fall 2 rise 3
+    server ali-masauth istioali-sit.mtfa.my.id:443 ssl verify none check inter 2000 fall 2 rise 3
+
+    http-request del-header X-Forwarded-For
+    http-request set-header X-Forwarded-For %[src]
+    http-request set-header X-Forwarded-Proto https
+    http-request set-header X-Forwarded-Host %[req.hdr(Host)]
+
+backend backend_msaccount
+    mode http
+    balance roundrobin
+    option httpchk GET /ms-account/healthz
+    http-check expect status 200
+
+    server gcp-msaccount istiogcp-sit.mtfa.my.id:443 ssl verify none check inter 2000 fall 2 rise 3
+    server ali-msaccount istioali-sit.mtfa.my.id:443 ssl verify none check inter 2000 fall 2 rise 3
+
+    http-request del-header X-Forwarded-For
+    http-request set-header X-Forwarded-For %[src]
+    http-request set-header X-Forwarded-Proto https
+    http-request set-header X-Forwarded-Host %[req.hdr(Host)]
+
+# ====== STATS UI for Monitoring ======
+listen stats
+    bind *:8404
+    mode http
+    stats enable
+    stats uri /stats
+    stats realm HAProxy\ Statistics
+    stats auth admin:admin123
+    stats refresh 10s
+    stats admin if TRUE
