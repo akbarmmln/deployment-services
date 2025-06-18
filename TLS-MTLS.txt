@@ -6,13 +6,43 @@ Step 1: Create a Certificate Authority (CA)
   (Common Name (CN): Set as "MyCA" or something similar)
 
 Step 2: Create Server Certificate
-2.1 Generate Server Private Key
-  openssl genpkey -algorithm RSA -out server.key -pkeyopt rsa_keygen_bits:2048
-2.2 Create a Certificate Signing Request (CSR)
-  openssl req -new -key server.key -out server.csr
+2.1 Buat file sans nya
+    vi openssl-san.cnf
+      [ req ]
+      default_bits       = 2048
+      prompt             = no
+      default_md         = sha256
+      distinguished_name = dn
+      req_extensions     = req_ext
+      
+      [ dn ]
+      C  = ID
+      ST = ID
+      L  = ID
+      O  = ID
+      OU = ID
+      CN = istiogcp1-sit.tfal.biz.id
+      emailAddress = akbarmmln@gmail.com
+      
+      [ req_ext ]
+      subjectAltName = @alt_names
+      
+      [ alt_names ]
+      DNS.1 = istiogcp1-sit.tfal.biz.id
+2.2 Generate Key dan CSR:
+  openssl req -new -nodes \
+  -out server.csr \
+  -keyout server.key \
+  -config openssl-san.cnf
   (Common Name (CN): Set this to your domain name (e.g., example.com) or localhost)
-2.3 Create Server Certificate Signed by CA
-  openssl x509 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt -days 365 -sha256
+2.3 Sign Sertifikat:
+  openssl x509 -req \
+  -in server.csr \
+  -CA ca.crt -CAkey ca.key -CAcreateserial \
+  -out server.crt \
+  -days 365 \
+  -extensions req_ext \
+  -extfile openssl-san.cnf
 
 Step 3: Create Client Certificate
 3.1 Generate Client Private Key
