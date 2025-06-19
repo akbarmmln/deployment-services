@@ -68,8 +68,8 @@ frontend https_frontend
 # Backend untuk ms-auth service
 backend ms_auth_backend
     balance roundrobin
-    
-    # Server definitions untuk ms-auth di kedua cluster
+
+    # Server definitions untuk ms-auth di semua cluster
     server cluster1 istiogcp1-sit.tfal.biz.id:443 ssl sni str(istiogcp1-sit.tfal.biz.id) verify none alpn h2,http/1.1 ssl-min-ver TLSv1.2
     http-request set-header Host istiogcp1-sit.tfal.biz.id
 
@@ -83,7 +83,7 @@ backend ms_auth_backend
 backend ms_account_backend
     balance roundrobin
         
-    # Server definitions untuk ms-account di kedua cluster
+    # Server definitions untuk ms-account di semua cluster
     server cluster1 istiogcp1-sit.tfal.biz.id:443 ssl sni str(istiogcp1-sit.tfal.biz.id) verify none alpn h2,http/1.1 ssl-min-ver TLSv1.2
     http-request set-header Host istiogcp1-sit.tfal.biz.id
 
@@ -196,7 +196,6 @@ frontend https_frontend
 backend ms_auth_backend_cluster1
     http-request set-header Host istiogcp1-sit.tfal.biz.id
     server s1 istiogcp1-sit.tfal.biz.id:443 ssl sni str(istiogcp1-sit.tfal.biz.id) verify none alpn h2,http/1.1 ssl-min-ver TLSv1.2
-
 backend ms_auth_backend_cluster2
     http-request set-header Host istiogcp1-sit.tfal.biz.id
     server s2 istiogcp1-sit.tfal.biz.id:443 ssl sni str(istiogcp1-sit.tfal.biz.id) verify none alpn h2,http/1.1 ssl-min-ver TLSv1.2
