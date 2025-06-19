@@ -71,10 +71,8 @@ backend ms_auth_backend
 
     # Server definitions untuk ms-auth di semua cluster
     server cluster1 istiogcp1-sit.tfal.biz.id:443 ssl sni str(istiogcp1-sit.tfal.biz.id) verify none alpn h2,http/1.1 ssl-min-ver TLSv1.2
-    http-request set-header Host istiogcp1-sit.tfal.biz.id
-
-    server cluster2 istiogcp1-sit.tfal.biz.id:443 ssl sni str(istiogcp1-sit.tfal.biz.id) verify none alpn h2,http/1.1 ssl-min-ver TLSv1.2
-    http-request set-header Host istiogcp1-sit.tfal.biz.id
+    
+    server cluster2 istiogcp2-sit.tfal.biz.id:443 ssl sni str(istiogcp2-sit.tfal.biz.id) verify none alpn h2,http/1.1 ssl-min-ver TLSv1.2
 
     # Logging untuk debugging
     option log-health-checks
@@ -85,10 +83,8 @@ backend ms_account_backend
         
     # Server definitions untuk ms-account di semua cluster
     server cluster1 istiogcp1-sit.tfal.biz.id:443 ssl sni str(istiogcp1-sit.tfal.biz.id) verify none alpn h2,http/1.1 ssl-min-ver TLSv1.2
-    http-request set-header Host istiogcp1-sit.tfal.biz.id
 
     server cluster2 istiogcp1-sit.tfal.biz.id:443 ssl sni str(istiogcp1-sit.tfal.biz.id) verify none alpn h2,http/1.1 ssl-min-ver TLSv1.2
-    http-request set-header Host istiogcp1-sit.tfal.biz.id
 
     # Logging untuk debugging
     option log-health-checks
