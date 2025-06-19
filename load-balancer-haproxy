@@ -1,5 +1,6 @@
 Final haproxy.cfg
 
+CARA KE SATU
 global
     log /dev/log    local0
     log /dev/log    local1 notice
@@ -64,9 +65,6 @@ frontend https_frontend
     use_backend ms_account_backend if is_istio_sit path_ms_account
     use_backend stats if is_stats
     
-    # Default backend jika tidak ada path yang cocok
-    default_backend default_backend
-
 # Backend untuk ms-auth service
 backend ms_auth_backend
     balance roundrobin
@@ -87,17 +85,14 @@ backend ms_account_backend
         
     # Server definitions untuk ms-account di kedua cluster
     server cluster1 istiogcp1-sit.tfal.biz.id:443 ssl sni str(istiogcp1-sit.tfal.biz.id) verify none alpn h2,http/1.1 ssl-min-ver TLSv1.2
+    http-request set-header Host istiogcp1-sit.tfal.biz.id
+
+    server cluster2 istiogcp1-sit.tfal.biz.id:443 ssl sni str(istiogcp1-sit.tfal.biz.id) verify none alpn h2,http/1.1 ssl-min-ver TLSv1.2
+    http-request set-header Host istiogcp1-sit.tfal.biz.id
 
     # Logging untuk debugging
     option log-health-checks
-
-# Default backend untuk handle request yang tidak match path tertentu
-backend default_backend
-    balance roundrobin
     
-    # Fallback ke general Istio Gateway health check
-    server cluster1 istiogcp1-sit.tfal.biz.id:443 ssl sni str(istiogcp1-sit.tfal.biz.id) verify none alpn h2,http/1.1 ssl-min-ver TLSv1.2
-
 # Backend untuk statistics
 backend stats
     stats enable
@@ -126,8 +121,7 @@ listen health_monitor
     monitor fail if { nbsrv(ms_auth_backend) eq 0 }
     monitor fail if { nbsrv(ms_account_backend) eq 0 }
 
-
-
+===============================================================================================================================================================================
 CARA KEDUA
 global
     log /dev/log    local0
