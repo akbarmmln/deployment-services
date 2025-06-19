@@ -84,6 +84,7 @@ step 4 -> systemctl restart k3s
 //remove istio
 -> istioctl manifest generate --set profile=demo | kubectl delete --ignore-not-found=true -f -
 -> istioctl uninstall --revision=default
+-> istioctl uninstall --purge
 
 https://github.com/istio/istio/tree/release-1.23
 
