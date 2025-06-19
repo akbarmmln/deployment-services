@@ -60,6 +60,11 @@ cd istio-1.19.3
 export PATH=$PWD/bin:$PATH
 istioctl install --set profile=demo -y
 
+#Jalankan perintah ini untuk menambahkan istio-egressgateway ke cluster yang sudah menggunakan profile `default`
+istioctl install -y \
+  --set components.egressGateways[0].name=istio-egressgateway \
+  --set components.egressGateways[0].enabled=true
+
 //labelling istio
 kubectl label namespace sit istio-injection=enabled
 
