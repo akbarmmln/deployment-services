@@ -35,42 +35,34 @@ defaults
     errorfile 503 /etc/haproxy/errors/503.http
     errorfile 504 /etc/haproxy/errors/504.http
 
-# Frontend untuk HTTP (redirect ke HTTPS)
-frontend http_frontend
-    bind *:80
-    redirect scheme https code 301 if !{ ssl_fc }
-
 # Frontend untuk HTTPS dengan path-based routing
 frontend https_frontend
     bind *:443 ssl crt /etc/haproxy/certs/istio-sit.pem alpn h2,http/1.1
+        
+    # ACL untuk host validation
+    acl is_istio_sit hdr(host) -i newistio-sit.tfal.biz.id
     
     # Menambahkan header untuk identifikasi load balancer
     http-request set-header X-Forwarded-For %[src]
     http-request set-header X-Forwarded-Proto https
     http-request set-header X-Forwarded-Host %[req.hdr(Host)]
     http-request set-header X-Forwarded-Port 443
-    
-    # ACL untuk host validation
-    acl is_istio_sit hdr(host) -i newistio-sit.tfal.biz.id
-    
-    # ACL untuk path-based routing
-    acl path_ms_auth path_beg /ms-auth
-    acl path_ms_account path_beg /ms-account
-    
-    # Stats page ACL
-    acl is_stats path_beg /haproxy-stats
-    
+    http-request set-header Host newistio-sit.tfal.biz.id
+
+    # ACL untuk path-based routing microservices v2
+    acl path_ms_auth path_beg /v2-ms-auth
+    acl path_ms_account path_beg /v2-ms-account
+        
     # Routing berdasarkan path
     use_backend ms_auth_backend if is_istio_sit path_ms_auth
     use_backend ms_account_backend if is_istio_sit path_ms_account
-    use_backend stats if is_stats
     
 # Backend untuk ms-auth service
 backend ms_auth_backend
     balance roundrobin
 
     # Server definitions untuk ms-auth di semua cluster
-    server cluster1 istiogcp1-sit.tfal.biz.id:443 ssl sni str(istiogcp1-sit.tfal.biz.id) verify none alpn h2,http/1.1 ssl-min-ver TLSv1.2
+    server cluster1 istiogcp1-sit.tfal.biz.id:443 ssl ssl sni str(istiogcp1-sit.tfal.biz.id) verify none alpn h2,http/1.1 ssl-min-ver TLSv1.2
     
     server cluster2 istiogcp2-sit.tfal.biz.id:443 ssl sni str(istiogcp2-sit.tfal.biz.id) verify none alpn h2,http/1.1 ssl-min-ver TLSv1.2
 
@@ -80,24 +72,14 @@ backend ms_auth_backend
 # Backend untuk ms-account service
 backend ms_account_backend
     balance roundrobin
-        
+    
     # Server definitions untuk ms-account di semua cluster
     server cluster1 istiogcp1-sit.tfal.biz.id:443 ssl sni str(istiogcp1-sit.tfal.biz.id) verify none alpn h2,http/1.1 ssl-min-ver TLSv1.2
 
-    server cluster2 istiogcp1-sit.tfal.biz.id:443 ssl sni str(istiogcp1-sit.tfal.biz.id) verify none alpn h2,http/1.1 ssl-min-ver TLSv1.2
+    server cluster2 istiogcp2-sit.tfal.biz.id:443 ssl sni str(istiogcp2-sit.tfal.biz.id) verify none alpn h2,http/1.1 ssl-min-ver TLSv1.2
 
     # Logging untuk debugging
     option log-health-checks
-    
-# Backend untuk statistics
-backend stats
-    stats enable
-    stats uri /haproxy-stats
-    stats realm HAProxy\ Statistics
-    stats auth admin:admin123
-    stats refresh 30s
-    stats show-node
-    stats show-legends
 
 # Listen block untuk monitoring
 listen stats
@@ -105,6 +87,9 @@ listen stats
     stats enable
     stats uri /stats
     stats refresh 10s
+    stats show-node
+    stats show-legends
+    stats auth admin:admin123
     stats admin if TRUE
     
 # Listen block untuk health check monitoring (opsional)
