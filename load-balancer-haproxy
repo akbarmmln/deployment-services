@@ -49,8 +49,10 @@ frontend https_frontend
     http-request set-header X-Forwarded-Port 443
     http-request set-header Host newistio-sit.tfal.biz.id
 
-    # ACL untuk path-based routing microservices v2
+    # ACL untuk path-based routing microservices all version
+    acl path_ms_auth path_beg /ms-auth
     acl path_ms_auth path_beg /v2-ms-auth
+    acl path_ms_account path_beg /ms-account
     acl path_ms_account path_beg /v2-ms-account
         
     # Routing berdasarkan path
@@ -62,7 +64,7 @@ backend ms_auth_backend
     balance roundrobin
 
     # Server definitions untuk ms-auth di semua cluster
-    server cluster1 istiogcp1-sit.tfal.biz.id:443 ssl sni str(istiogcp1-sit.tfal.biz.id) verify none alpn h2,http/1.1 ssl-min-ver TLSv1.2
+    server cluster1 istiogcp1-sit.tfal.biz.id:443 check ssl sni str(istiogcp1-sit.tfal.biz.id) verify none alpn h2,http/1.1 ssl-min-ver TLSv1.2
     
     server cluster2 istiogcp2-sit.tfal.biz.id:443 ssl sni str(istiogcp2-sit.tfal.biz.id) verify none alpn h2,http/1.1 ssl-min-ver TLSv1.2
 
@@ -101,7 +103,6 @@ listen health_monitor
     # Return 200 jika HAProxy berjalan dengan baik
     monitor fail if { nbsrv(ms_auth_backend) eq 0 }
     monitor fail if { nbsrv(ms_account_backend) eq 0 }
-
 
 ===============================================================================================================================================================================
 CARA KEDUA
