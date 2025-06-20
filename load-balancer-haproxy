@@ -62,7 +62,7 @@ backend ms_auth_backend
     balance roundrobin
 
     # Server definitions untuk ms-auth di semua cluster
-    server cluster1 istiogcp1-sit.tfal.biz.id:443 ssl ssl sni str(istiogcp1-sit.tfal.biz.id) verify none alpn h2,http/1.1 ssl-min-ver TLSv1.2
+    server cluster1 istiogcp1-sit.tfal.biz.id:443 ssl sni str(istiogcp1-sit.tfal.biz.id) verify none alpn h2,http/1.1 ssl-min-ver TLSv1.2
     
     server cluster2 istiogcp2-sit.tfal.biz.id:443 ssl sni str(istiogcp2-sit.tfal.biz.id) verify none alpn h2,http/1.1 ssl-min-ver TLSv1.2
 
@@ -101,6 +101,7 @@ listen health_monitor
     # Return 200 jika HAProxy berjalan dengan baik
     monitor fail if { nbsrv(ms_auth_backend) eq 0 }
     monitor fail if { nbsrv(ms_account_backend) eq 0 }
+
 
 ===============================================================================================================================================================================
 CARA KEDUA
