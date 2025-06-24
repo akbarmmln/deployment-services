@@ -46,25 +46,24 @@ frontend http_block
 # Frontend untuk HTTPS dengan path-based routing
 frontend https_frontend
     bind *:443 ssl crt /etc/haproxy/certs/istio-sit.pem alpn h2,http/1.1
-        
-    # ACL untuk host validation
-    acl is_istio_sit hdr(host) -i newistio-sit.tfal.biz.id
+
+    # ACL untuk Jenkins
     acl is_jenkins hdr(host) -i jenkins.tfal.biz.id
+    # Routing Jenkins
+    use_backend jenkins_backend if is_jenkins
+
+    # ACL lainnya
+    acl is_istio_sit hdr(host) -i newistio-sit.tfal.biz.id
+    acl path_ms_auth path_beg /ms-auth
+    acl path_ms_auth path_beg /v2-ms-auth
+    # Routing berdasarkan path
+    use_backend ms_auth_backend if is_istio_sit path_ms_auth
 
     # Menambahkan header untuk identifikasi load balancer
     http-request set-header X-Forwarded-For %[src]
     http-request set-header X-Forwarded-Proto https
     http-request set-header X-Forwarded-Host %[req.hdr(Host)]
     http-request set-header X-Forwarded-Port 443
-    http-request set-header Host newistio-sit.tfal.biz.id
-
-    # ACL untuk path-based routing microservices all version
-    acl path_ms_auth path_beg /ms-auth
-    acl path_ms_auth path_beg /v2-ms-auth
-
-    # Routing berdasarkan path
-    use_backend ms_auth_backend if is_istio_sit path_ms_auth
-    use_backend jenkins_backend if is_jenkins
     
 # Backend untuk ms-auth service
 backend ms_auth_backend
@@ -84,15 +83,13 @@ backend ms_auth_backend
 backend jenkins_backend
     mode http
     balance roundrobin
-
-    option httpchk GET /login
+    option httpchk
+    http-check connect port 8080
+    http-check send meth GET uri /login ver HTTP/1.1 hdr Host jenkins.tfal.biz.id
     http-check expect status 200
 
-    # Jika Jenkins berjalan di server yang sama
-    server jenkins_local 127.0.0.1:8080 check
-
     # Jika Jenkins di server lain, ganti IP-nya
-    # server jenkins_remote 34.92.167.75:8080 check
+    server jenkins_remote 34.92.167.75:8080 check
 
     option log-health-checks
 
