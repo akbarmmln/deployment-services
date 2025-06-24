@@ -1,0 +1,25 @@
+1. Update sistem
+-> sudo apt update && sudo apt upgrade -y
+
+2. Install Java (Jenkins butuh Java, minimal OpenJDK 11)
+-> sudo apt install fontconfig openjdk-21-jre -y
+-> java -version
+
+3. Tambahkan repository resmi Jenkins
+-> sudo wget -O /etc/apt/keyrings/jenkins-keyring.asc \
+  https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+-> echo "deb [signed-by=/etc/apt/keyrings/jenkins-keyring.asc]" \
+  https://pkg.jenkins.io/debian-stable binary/ | sudo tee \
+  /etc/apt/sources.list.d/jenkins.list > /dev/null
+
+4. Install Jenkins
+-> sudo apt update
+-> sudo apt install jenkins -y
+
+5. Start dan enable Jenkins
+-> sudo systemctl start jenkins
+-> sudo systemctl enable jenkins
+-> sudo systemctl status jenkins
+
+6. AMBIL PASSWORD NYA
+-> sudo cat /var/lib/jenkins/secrets/initialAdminPassword
