@@ -1,3 +1,5 @@
+=> cat /etc/letsencrypt/live/yourdomain.com/fullchain.pem /etc/letsencrypt/live/yourdomain.com/privkey.pem > /etc/haproxy/certs/istio-sit.pem
+
 Final haproxy.cfg
 
 CARA KE SATU
