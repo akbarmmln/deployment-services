@@ -23,3 +23,14 @@
 
 6. AMBIL PASSWORD NYA
 -> sudo cat /var/lib/jenkins/secrets/initialAdminPassword
+
+supaya menghindari remote access (hanya 127.0.0.1)
+-> sudo mkdir -p /etc/systemd/system/jenkins.service.d
+-> sudo nano /etc/systemd/system/jenkins.service.d/override.conf
+isi value nya
+[Service]
+Environment="JENKINS_LISTEN_ADDRESS=127.0.0.1"
+
+-> sudo systemctl daemon-reexec
+-> sudo systemctl daemon-reload
+-> systemctl start jenkins
