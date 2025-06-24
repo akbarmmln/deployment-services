@@ -43,19 +43,14 @@ frontend http_block
     mode http
     http-request deny
 
-# Frontend direct port 80 ke 443
-frontend http_redirect
-    bind *:80
-    mode http
-    redirect scheme https code 301 if !{ ssl_fc }
-
 # Frontend untuk HTTPS dengan path-based routing
 frontend https_frontend
     bind *:443 ssl crt /etc/haproxy/certs/istio-sit.pem alpn h2,http/1.1
         
     # ACL untuk host validation
     acl is_istio_sit hdr(host) -i newistio-sit.tfal.biz.id
-    
+    acl is_jenkins hdr(host) -i jenkins.tfal.biz.id
+
     # Menambahkan header untuk identifikasi load balancer
     http-request set-header X-Forwarded-For %[src]
     http-request set-header X-Forwarded-Proto https
@@ -66,9 +61,10 @@ frontend https_frontend
     # ACL untuk path-based routing microservices all version
     acl path_ms_auth path_beg /ms-auth
     acl path_ms_auth path_beg /v2-ms-auth
-        
+
     # Routing berdasarkan path
     use_backend ms_auth_backend if is_istio_sit path_ms_auth
+    use_backend jenkins_backend if is_jenkins
     
 # Backend untuk ms-auth service
 backend ms_auth_backend
@@ -82,6 +78,22 @@ backend ms_auth_backend
     server cluster1 istiogcp1-sit.tfal.biz.id:80 check inter 5000 fall 2 rise 2
 
     # Logging untuk debugging
+    option log-health-checks
+
+# Backend untuk jenkins
+backend jenkins_backend
+    mode http
+    balance roundrobin
+
+    option httpchk GET /login
+    http-check expect status 200
+
+    # Jika Jenkins berjalan di server yang sama
+    server jenkins_local 127.0.0.1:8080 check
+
+    # Jika Jenkins di server lain, ganti IP-nya
+    # server jenkins_remote 34.92.167.75:8080 check
+
     option log-health-checks
 
 # Listen block untuk monitoring
@@ -103,6 +115,7 @@ listen health_monitor
     
     # Return 200 jika HAProxy berjalan dengan baik
     monitor fail if { nbsrv(ms_auth_backend) eq 0 }
+
 
 ===============================================================================================================================================================================
 CARA KEDUA
