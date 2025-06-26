@@ -38,11 +38,6 @@ install the local-provisioner
 
 https://gitlab.com/cloud-versity/rancher-k3s-first-steps -> install k3s kubernetes
 
-kubectl create secret generic lts-server-ca -n istio-system \
-  --from-file=tls.crt=/etc/letsencrypt/live/tfal.biz.id/cert.pem \
-  --from-file=tls.key=/etc/letsencrypt/live/tfal.biz.id/privkey.pem \
-  --from-file=ca.crt=/etc/letsencrypt/live/tfal.biz.id/chain.pem 
-atau
 kubectl create secret tls lts-server-ca -n istio-system \
   --cert=/etc/letsencrypt/live/tfal.biz.id/fullchain.pem \
   --key=/etc/letsencrypt/live/tfal.biz.id/privkey.pem
