@@ -54,17 +54,75 @@ frontend https_frontend
 
     # ACL lainnya
     acl is_istio_sit hdr(host) -i newistio-sit.tfal.biz.id
+
+    # Routing berdasarkan path
     acl path_ms_auth path_beg /ms-auth
     acl path_ms_auth path_beg /v2-ms-auth
-    # Routing berdasarkan path
     use_backend ms_auth_backend if is_istio_sit path_ms_auth
+
+    acl path_ms_account path_beg /ms-account
+    acl path_ms_account path_beg /v2-ms-account
+    use_backend ms_account_backend if is_istio_sit path_ms_account
+
+    acl path_ms_support path_beg /ms-support
+    acl path_ms_support path_beg /v2-ms-support
+    use_backend ms_support_backend if is_istio_sit path_ms_support
+
+    acl path_ms_payment path_beg /ms-payment
+    acl path_ms_payment path_beg /v2-ms-payment
+    use_backend ms_payment_backend if is_istio_sit path_ms_payment
 
     # Menambahkan header untuk identifikasi load balancer
     http-request set-header X-Forwarded-For %[src]
     http-request set-header X-Forwarded-Proto https
     http-request set-header X-Forwarded-Host %[req.hdr(Host)]
     http-request set-header X-Forwarded-Port 443
-    
+
+# Backend untuk ms-payment service
+backend ms_payment_backend
+    mode http
+    balance roundrobin
+    option httpchk
+    http-check connect port 80
+    http-check send meth GET uri /ms-payment/healthcheck/healty ver HTTP/1.1 hdr Host newistio-sit.tfal.biz.id
+
+    # Server definitions untuk ms-auth di semua cluster
+    server cluster1 istiogcp1-sit.tfal.biz.id:80 check inter 5000 fall 2 rise 2
+    server cluster2 istiogcp2-sit.tfal.biz.id:80 check inter 5000 fall 2 rise 2
+
+    # Logging untuk debugging
+    option log-health-checks
+
+# Backend untuk ms-support service
+backend ms_support_backend
+    mode http
+    balance roundrobin
+    option httpchk
+    http-check connect port 80
+    http-check send meth GET uri /ms-support/healthcheck/healty ver HTTP/1.1 hdr Host newistio-sit.tfal.biz.id
+
+    # Server definitions untuk ms-auth di semua cluster
+    server cluster1 istiogcp1-sit.tfal.biz.id:80 check inter 5000 fall 2 rise 2
+    server cluster2 istiogcp2-sit.tfal.biz.id:80 check inter 5000 fall 2 rise 2
+
+    # Logging untuk debugging
+    option log-health-checks
+
+# Backend untuk ms-account service
+backend ms_account_backend
+    mode http
+    balance roundrobin
+    option httpchk
+    http-check connect port 80
+    http-check send meth GET uri /ms-account/healthcheck/healty ver HTTP/1.1 hdr Host newistio-sit.tfal.biz.id
+
+    # Server definitions untuk ms-auth di semua cluster
+    server cluster1 istiogcp1-sit.tfal.biz.id:80 check inter 5000 fall 2 rise 2
+    server cluster2 istiogcp2-sit.tfal.biz.id:80 check inter 5000 fall 2 rise 2
+
+    # Logging untuk debugging
+    option log-health-checks
+
 # Backend untuk ms-auth service
 backend ms_auth_backend
     mode http
@@ -75,6 +133,7 @@ backend ms_auth_backend
 
     # Server definitions untuk ms-auth di semua cluster
     server cluster1 istiogcp1-sit.tfal.biz.id:80 check inter 5000 fall 2 rise 2
+    server cluster2 istiogcp2-sit.tfal.biz.id:80 check inter 5000 fall 2 rise 2
 
     # Logging untuk debugging
     option log-health-checks
@@ -89,7 +148,7 @@ backend jenkins_backend
     http-check expect status 200
 
     # Jika Jenkins di server lain, ganti IP-nya
-    server jenkins_remote 34.92.167.75:8080 check
+    server jenkins_remote 127.0.0.1:8080 check
 
     option log-health-checks
 
@@ -112,6 +171,9 @@ listen health_monitor
     
     # Return 200 jika HAProxy berjalan dengan baik
     monitor fail if { nbsrv(ms_auth_backend) eq 0 }
+    monitor fail if { nbsrv(ms_account_backend) eq 0 }
+    monitor fail if { nbsrv(ms_support_backend) eq 0 }
+    monitor fail if { nbsrv(ms_payment_backend) eq 0 }
 
 
 ===============================================================================================================================================================================
