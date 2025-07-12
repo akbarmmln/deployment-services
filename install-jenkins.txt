@@ -34,3 +34,9 @@ Environment="JENKINS_LISTEN_ADDRESS=127.0.0.1"
 -> sudo systemctl daemon-reexec
 -> sudo systemctl daemon-reload
 -> systemctl start jenkins
+
+=========
+Add Jenkins User to the Docker Group
+-> sudo usermod -aG docker jenkins
+-> sudo systemctl restart jenkins
+-> groups jenkins
