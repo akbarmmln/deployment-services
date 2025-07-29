@@ -84,3 +84,9 @@ verb 3
 <tls-auth>
 (Paste isi ta.key)
 </tls-auth>
+
+
+Security Group (Edit Inbound Rules) :
+-> Izinkan UDP 1194 dari 0.0.0.0/0 (agar klien bisa konek VPN)
+-> Hapus/Nonaktifkan SSH (port 22) dari 0.0.0.0/0
+-> Tambahkan rule (SSH PORT 22 DARI 10.8.0.0/24)
