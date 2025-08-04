@@ -74,6 +74,10 @@ step 1 -> mkdir /root/.kube
 step 2 -> export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
 step 3 -> kubectl config view --raw > ~/.kube/config
 step 4 -> systemctl restart k3s
+//atau for k32
+step 1 -> mkdir -p ~/.kube
+step 2 -> sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
+step 3 -> sudo chown $USER:$USER ~/.kube/config
 
 //uninstall k3s master
 /usr/local/bin/k3s-uninstall.sh
