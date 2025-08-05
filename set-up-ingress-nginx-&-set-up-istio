@@ -70,11 +70,7 @@ kubectl label namespace sit istio-injection-
 kubectl get ns --show-labels
 
 //for k3s
-step 1 -> mkdir /root/.kube
-step 2 -> export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
-step 3 -> kubectl config view --raw > ~/.kube/config
-step 4 -> systemctl restart k3s
-//atau for k32
+init => curl -sfL https://get.k3s.io | sh -s - --tls-san 43.134.229.34 --disable traefik --write-kubeconfig-mode 644 --node-name single-node
 step 1 -> mkdir -p ~/.kube
 step 2 -> sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
 step 3 -> sudo chown $USER:$USER ~/.kube/config
