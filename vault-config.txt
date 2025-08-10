@@ -9,6 +9,9 @@ helm install vault-injector hashicorp/vault \
   --set injector.enabled=true \
   --set injector.externalVaultAddr=<ip-public-vault>:8200
 
+--konfigurasikan setelah install
+file konfigurasi ada di -> /etc/vault.d/vault.hcl
+
 vault auth enable kubernetes
 vault write auth/kubernetes/config \
   token_reviewer_jwt="$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" \
