@@ -1,0 +1,19 @@
+sudo apt install redis -y
+redis-server --version
+
+sudo systemctl enable redis
+sudo systemctl start redis
+sudo systemctl status redis
+
+  Tes Redis server
+  Gunakan Redis CLI: exec: redis-cli
+  Lalu coba perintah: ping
+  Kalau balasannya: PONG
+
+konfigurasi file -> cat /etc/redis/redis.conf
+-> bind 0.0.0.0
+-> protected-mode no
+
+Tambahkan user baru -> exec: user admin on >PasswordKuat123 allkeys allcommands
+Disable user default -> exec: user default off
+Simpan dan restart redis -> exec: systemctl restart redis.service
