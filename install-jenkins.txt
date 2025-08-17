@@ -40,3 +40,11 @@ Add Jenkins User to the Docker Group
 -> sudo usermod -aG docker jenkins
 -> sudo systemctl restart jenkins
 -> groups jenkins
+
+===========
+script hapus history builds
+Jenkins.instance.getAllItems(Job.class).each { job ->
+    job.getBuilds().each { build ->
+        build.delete()
+    }
+}
