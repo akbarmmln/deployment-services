@@ -48,3 +48,23 @@ Jenkins.instance.getAllItems(Job.class).each { job ->
         build.delete()
     }
 }
+
+===========
+script disable semua job
+Jenkins.instance.getAllItems(Job.class).each { job ->
+    if (!job.isDisabled()) {
+        job.setDisabled(true)
+        job.save()
+        println("Disabled job: ${job.fullName}")
+    }
+}
+
+===========
+script enable semua job
+Jenkins.instance.getAllItems(Job.class).each { job ->
+    if (job.isDisabled()) {
+        job.setDisabled(false)
+        job.save()
+        println("Enabled job: ${job.fullName}")
+    }
+}
