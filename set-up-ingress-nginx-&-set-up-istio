@@ -51,8 +51,7 @@ kubectl apply -f /deploy/static/provider/baremetal/deploy.yaml
 
 //set up istio
 curl -L https://istio.io/downloadIstio | sh -
-cd istio-1.19.3
-export PATH=$PWD/bin:$PATH
+masuk ke path nya lalu -> export PATH=$PWD/bin:$PATH
 istioctl install --set profile=demo -y
 
 #Jalankan perintah ini untuk menambahkan istio-egressgateway ke cluster yang sudah menggunakan profile `default`
@@ -76,6 +75,7 @@ step 2 -> sudo cp /etc/rancher/k3s/k3s.yaml ~/.kube/config
 step 3 -> sudo chown $USER:$USER ~/.kube/config
 join command => sudo cat /var/lib/rancher/k3s/server/node-token
 exec join in worker node => curl -sfL https://get.k3s.io | K3S_URL=https://<ip-public>:6443 K3S_TOKEN=<isi-token> sh -
+ambil kubernetes ca certificate -> /var/lib/rancher/k3s/server/tls/server-ca.crt
 
 //uninstall k3s master
 /usr/local/bin/k3s-uninstall.sh
