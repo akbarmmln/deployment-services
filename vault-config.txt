@@ -244,9 +244,9 @@ JIKA DIBUTUHKAN DALAM PENGECEKAN DAN LAIN LAIN NYA
         server node1 <IP_PUBLIC>:8200 check
         server node2 <IP_PUBLIC>:8200 check
 
-4   Inisialisasi dan Unseal Vault (Lakukan di satu node saja -> load-balancer disarankan):
+4   Inisialisasi dan Unseal Vault
     export VAULT_ADDR='http://<IP_PUBLIC>:8200'
-    vault operator init
+    vault operator init (Lakukan di satu node saja)
     vault operator unseal
     NOTES: Simpan unseal keys dan root token
 4.1 Lalu, lakukan unseal di semua node (node1 & node2) dengan 3 dari 5 unseal key:
