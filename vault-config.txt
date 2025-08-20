@@ -192,8 +192,8 @@ JIKA DIBUTUHKAN DALAM PENGECEKAN DAN LAIN LAIN NYA
     # Cek versi terinstal
     vault -v
 2.2 Buat direktori dan user Vault
-    sudo useradd --system --home /etc/vault.d --shell /bin/false vault
     sudo mkdir -p /etc/vault.d /var/lib/vault
+    sudo useradd --system --home /etc/vault.d --shell /bin/false vault
     sudo chown -R vault:vault /etc/vault.d /var/lib/vault
 2.3 Konfigurasi Vault
     -> /etc/vault.d/vault.hcl
