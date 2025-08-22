@@ -17,3 +17,5 @@ konfigurasi file -> cat /etc/redis/redis.conf
 Tambahkan user baru -> exec: user admin on >PasswordKuat123 allkeys allcommands
 Disable user default -> exec: user default off
 Simpan dan restart redis -> exec: systemctl restart redis.service
+
+redis-cli -h <host> -p <port>
