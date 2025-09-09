@@ -1,0 +1,56 @@
+sudo apt install openjdk-17-jdk -y
+java -version
+
+wget -qO - https://artifacts.elastic.co/GPG-KEY-elasticsearch | sudo apt-key add -
+sudo apt install apt-transport-https -y
+echo "deb https://artifacts.elastic.co/packages/8.x/apt stable main" | sudo tee /etc/apt/sources.list.d/elastic-8.x.list
+sudo apt update
+
+sudo apt install elasticsearch -y
+-> /etc/elasticsearch/elasticsearch.yml
+sesuaikan cluster.name, node.name, network.host: 0.0.0.0, http.port: 9200, discovery.type: single-node, http.host: 0.0.0.0
+
+lalu buat reset password kibana (untuk digunakan di kibana.yaml)
+/usr/share/elasticsearch/bin/elasticsearch-reset-password -u kibana
+
+sudo apt install kibana -y
+-> /etc/kibana/kibana.yml
+sesuaikan server.port, server.host: "0.0.0.0", elasticsearch.hosts: ["https://localhost:9200"], elasticsearch.username, elasticsearch.password, elasticsearch.ssl.certificateAuthorities
+untuk certificateAuthorities, lakukan ini:
+user(kibana)
+sudo cp /etc/elasticsearch/certs/http_ca.crt /etc/kibana/http_ca.crt
+sudo chown kibana:kibana /etc/kibana/http_ca.crt
+sudo chmod 640 /etc/kibana/http_ca.crt
+elasticsearch.ssl.certificateAuthorities: ["/etc/kibana/http_ca.crt"]
+
+sudo apt install apm-server -y
+-> /etc/apm-server/apm-server.ym
+sesuaikan host: "0.0.0.0:8200", 
+agent.config:
+    enabled: true
+    cache.expiration: 30s
+    elasticsearch:
+      hosts: ["https://localhost:9200"]
+      username: "sesuaikan"
+      password: "sesuaikan"
+      ssl:
+        certificate_authorities: ["/etc/apm-server/http_ca.crt"]
+kibana:
+    enabled: true
+    host: "http://localhost:5601"
+    username: "sesuaikan"
+    password: "sesuaikan"
+output.elasticsearch:
+    hosts: ["https://localhost:9200"]
+    enabled: true
+    username: "sesuaikan"
+    password: "sesuaikan"
+    ssl.enabled: true
+    ssl.certificate_authorities: ["/etc/apm-server/http_ca.crt"]
+
+untuk certificateAuthorities, lakukan ini:
+user(apm-server)
+sudo cp /etc/elasticsearch/certs/http_ca.crt /etc/apm-server/http_ca.crt
+sudo chown root:apm-server /etc/apm-server/http_ca.crt
+sudo chmod 640 /etc/apm-server/http_ca.crt
+elasticsearch.ssl.certificateAuthorities: ["/etc/kibana/http_ca.crt"]
