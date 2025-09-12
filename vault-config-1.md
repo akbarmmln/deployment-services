@@ -65,12 +65,12 @@ file ada di /etc/vault/config.hcl
 ```
 NOTES: Simpan unseal keys dan root token
 ### 7. Join Vault (jika ada tambahan node)
-    case: Node 3 (baru): 47.237.117.193
-    langkah 1, 2 dan 3, pada langkah ke-3 Jangan isi retry_join di sini, karena kita akan join secara manual
-    lalu joinkan
-    ```bash
-    vault operator raft join http:<LEADER_NODE_IP>:8200
-    ```
+case: Node 3 (baru): 47.237.117.193
+langkah 1, 2 dan 3, pada langkah ke-3 Jangan isi retry_join di sini, karena kita akan join secara manual
+lalu joinkan dengan perintah:
+```bash
+vault operator raft join http:<LEADER_NODE_IP>:8200
+```
 ### 8. Cek Status Cluster
 ```bash
 vault operator raft list-peers
