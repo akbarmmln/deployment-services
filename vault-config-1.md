@@ -1,12 +1,14 @@
 # konfigurasi Vault Cluster dengan raf
 node 1 : 47.237.117.191 node 2 : 47.237.117.192 node 3 : 47.237.117.193 (sebagai load balancer nya)
 
-### 🧰 1. Persiapkan Node 3
-# 1. Instalasi & Konfigurasi Vault (di semua node)
-# 2. Buat direktori dan user Vault
-    sudo mkdir -p /etc/vault.d /var/lib/vault/data
-    sudo useradd --system --home /etc/vault.d --shell /bin/false vault
-    sudo chown -R vault:vault /etc/vault.d /var/lib/vault/data
+### 1. Instalasi & Konfigurasi Vault (di semua node)
+### 2. Buat direktori dan user Vault
+```bash
+sudo mkdir -p /etc/vault.d /var/lib/vault/data
+sudo useradd --system --home /etc/vault.d --shell /bin/false vault
+sudo chown -R vault:vault /etc/vault.d /var/lib/vault/data
+```
+
 
 # 3. Konfigurasi Vault Raft (di semua node)
     -> /etc/vault/config.hcl
