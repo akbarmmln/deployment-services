@@ -71,7 +71,10 @@ NOTES: Simpan unseal keys dan root token
     ```bash
     vault operator raft join http:<LEADER_NODE_IP>:8200
     ```
-8.  Cek Status Cluster
+### 8. Cek Status Cluster
+    ```bash
     vault operator raft list-peers
+    ```
+
 NOTED JIKA ADA SECURITY GROUP ATAU FIREWALL AKTIF, PERLU DILAKUKAN PENYESUAIN TERHADAP PORT BERIKUT: 8200, 8300, 8301, 8500, 8600, 8302
 journalctl -u vault.service -n 50 --no-pager
