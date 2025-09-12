@@ -32,7 +32,25 @@ file ada di /etc/vault/config.hcl
     ui = true
     disable_mlock = true
 ```
-4.  Service systemd Vault
+### 4. Service systemd Vault (di semua node)
+```bash
+    [Unit]
+    Description=Vault
+    Requires=network-online.target
+    After=network-online.target
+
+    [Service]
+    User=vault
+    Group=vault
+    ExecStart=/usr/local/bin/vault server -config=/etc/vault.d/vault.hcl
+    ExecReload=/bin/kill -HUP $MAINPID
+    KillMode=process
+    Restart=on-failure
+    LimitNOFILE=65536
+
+    [Install]
+    WantedBy=multi-user.target
+```
 5.  Start vault
 6.  Unseal Vault
 7.  Join Vault (jika ada tambahan node)
