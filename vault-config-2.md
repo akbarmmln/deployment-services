@@ -41,7 +41,7 @@ bootstrap_expect = 2
 data_dir = "/opt/consul"
 bind_addr = "0.0.0.0"
 advertise_addr = "IP_NODE_PUBLIC"
-retry_join = ["IP_NODE_PUBLIC_LAIN"]
+retry_join = ["IP_NODE_PUBLIC_LAIN", "IP_NODE_PUBLIC_LAIN"]
 ui = true
 ```
 ### 1.4 Service Systemd Consul (di semua node)
@@ -98,4 +98,62 @@ sudo mv vault /usr/local/bin/
 rm vault_${VAULT_VERSION}_linux_amd64.zip
 # Cek versi terinstal
 vault -v
+```
+### 2.2 Buat direktori dan user Vault (di semua node)
+```bash
+sudo mkdir -p /etc/vault.d /var/lib/vault
+sudo useradd --system --home /etc/vault.d --shell /bin/false vault
+sudo chown -R vault:vault /etc/vault.d /var/lib/vault
+```
+### 2.3 Konfigurasi Vault (di semua node)
+file ada di /etc/vault.d/vault.hcl
+```bash
+ui = true
+api_addr = "http://<IP_NODE_PUBLIC>:8200"
+cluster_addr = "http://<IP_NODE_PUBLIC>:8201"
+listener "tcp" {
+  address     = "0.0.0.0:8200"
+  tls_disable = 1
+}
+storage "consul" {
+  address = "127.0.0.1:8500"
+  path    = "vault/"
+}
+disable_mlock = true
+```
+### 2.4 Service systemd Vault (di semua node)
+file ada di /etc/systemd/system/vault.service
+```bash
+[Unit]
+Description=Vault
+Requires=network-online.target
+After=network-online.target
+
+[Service]
+User=vault
+Group=vault
+ExecStart=/usr/local/bin/vault server -config=/etc/vault.d/vault.hcl
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=on-failure
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
+```
+### 2.5 Start Vault (di semua node)
+```bash
+sudo systemctl daemon-reexec
+sudo systemctl enable vault
+sudo systemctl start vault
+```
+### 2.6 Inisialisasi dan Unseal Vault
+```bash
+export VAULT_ADDR='http://<IP_PUBLIC>:8200'
+vault operator init (Lakukan di satu node saja)
+vault operator unseal (Lakukan di semua node)
+```
+### 2.6 Verifikasi
+```bash
+vault status
 ```
