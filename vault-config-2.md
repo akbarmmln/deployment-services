@@ -66,15 +66,34 @@ sudo systemctl daemon-reexec
 sudo systemctl enable consul
 sudo systemctl start consul
 ```
-
-
-
-
-### 2. Buat direktori dan user Vault
+simpan dengan nama install_latest_vault.sh -> chmod +x install_latest_vault.sh
 ```bash
-sudo mkdir -p /etc/vault.d /var/lib/vault/data
-sudo useradd --system --home /etc/vault.d --shell /bin/false vault
-sudo chown -R vault:vault /etc/vault.d /var/lib/vault/data
+#!/bin/bash
+# Ambil versi terbaru Vault dari situs HashiCorp
+VAULT_VERSION=$(curl -s https://releases.hashicorp.com/vault/ | grep -oP 'vault/\K[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+# Tampilkan versi yang akan didownload
+echo "Vault version terbaru: $VAULT_VERSION"
+# Download file ZIP
+curl -O https://releases.hashicorp.com/vault/${VAULT_VERSION}/vault_${VAULT_VERSION}_linux_amd64.zip
+# Ekstrak dan install
+unzip vault_${VAULT_VERSION}_linux_amd64.zip
+sudo mv vault /usr/local/bin/
+rm vault_${VAULT_VERSION}_linux_amd64.zip
+# Cek versi terinstal
+vault -v
+```
+
+JIKA DIBUTUHKAN DALAM PENGECEKAN DAN LAIN LAIN NYA
+-> consul members
+-> consul validate /etc/consul.d/
+-> sudo systemctl stop consul kemudian sudo rm -rf /opt/consul/* dan sudo systemctl start consul
+
+
+### 2. Instalasi & Konfigurasi Vault (di semua node)
+### 2.1 Install Vault
+```bash
+sudo apt update
+sudo apt install unzip curl -y
 ```
 ### 3. Konfigurasi Vault Raft (di semua node)
 file ada di /etc/vault/config.hcl
