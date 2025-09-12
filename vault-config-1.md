@@ -51,8 +51,18 @@ file ada di /etc/vault/config.hcl
     [Install]
     WantedBy=multi-user.target
 ```
-5.  Start vault
-6.  Unseal Vault
+### 5. Start vault (di semua node)
+```bash
+    sudo systemctl daemon-reexec
+    sudo systemctl enable vault
+    sudo systemctl start vault
+```
+### 6. Inisialisasi dan Unseal Vault
+```bash
+    export VAULT_ADDR='http://<IP_PUBLIC>:8200'
+    vault operator init (Lakukan di satu node saja)
+    vault operator unseal (Lakukan di semua node)
+```
 7.  Join Vault (jika ada tambahan node)
     case: Node 3 (baru): 47.237.117.193
     langkah 1, 2 dan 3, pada langkah ke-3 Jangan isi retry_join di sini, karena kita akan join secara manual
