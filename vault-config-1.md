@@ -11,57 +11,57 @@ sudo chown -R vault:vault /etc/vault.d /var/lib/vault/data
 ### 3. Konfigurasi Vault Raft (di semua node)
 file ada di /etc/vault/config.hcl
 ```bash
-    listener "tcp" {
-      address     = "0.0.0.0:8200"
-      tls_disable = 1
-    }
-    storage "raft" {
-      path    = "/var/lib/vault/data"
-      node_id = "nodex"
+listener "tcp" {
+    address     = "0.0.0.0:8200"
+    tls_disable = 1
+}
+storage "raft" {
+    path    = "/var/lib/vault/data"
+    node_id = "nodex"
     
-      retry_join {
+    retry_join {
         leader_api_addr = "http://<IP_NODEOTHER_ke-1>:8200"
-      }
-    
-      retry_join {
-        leader_api_addr = "http://<IP_NODEOTHER_ke-n>:8200"
-      }
     }
-    api_addr = "http://<IP_NODE_PUBLIC_SELFT>:8200"
-    cluster_addr = "http://<IP_NODE_PUBLIC_SELFT>:8201"
-    ui = true
-    disable_mlock = true
+    
+    retry_join {
+        leader_api_addr = "http://<IP_NODEOTHER_ke-n>:8200"
+    }
+}
+api_addr = "http://<IP_NODE_PUBLIC_SELFT>:8200"
+cluster_addr = "http://<IP_NODE_PUBLIC_SELFT>:8201"
+ui = true
+disable_mlock = true
 ```
 ### 4. Service systemd Vault (di semua node)
 ```bash
-    [Unit]
-    Description=Vault
-    Requires=network-online.target
-    After=network-online.target
+[Unit]
+Description=Vault
+Requires=network-online.target
+After=network-online.target
 
-    [Service]
-    User=vault
-    Group=vault
-    ExecStart=/usr/local/bin/vault server -config=/etc/vault.d/vault.hcl
-    ExecReload=/bin/kill -HUP $MAINPID
-    KillMode=process
-    Restart=on-failure
-    LimitNOFILE=65536
+[Service]
+User=vault
+Group=vault
+ExecStart=/usr/local/bin/vault server -config=/etc/vault.d/vault.hcl
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=on-failure
+LimitNOFILE=65536
 
-    [Install]
-    WantedBy=multi-user.target
+[Install]
+WantedBy=multi-user.target
 ```
 ### 5. Start vault (di semua node)
 ```bash
-    sudo systemctl daemon-reexec
-    sudo systemctl enable vault
-    sudo systemctl start vault
+sudo systemctl daemon-reexec
+sudo systemctl enable vault
+sudo systemctl start vault
 ```
 ### 6. Inisialisasi dan Unseal Vault
 ```bash
-    export VAULT_ADDR='http://<IP_PUBLIC>:8200'
-    vault operator init (Lakukan di satu node saja)
-    vault operator unseal (Lakukan di semua node)
+export VAULT_ADDR='http://<IP_PUBLIC>:8200'
+vault operator init (Lakukan di satu node saja)
+vault operator unseal (Lakukan di semua node)
 ```
 NOTES: Simpan unseal keys dan root token
 ### 7. Join Vault (jika ada tambahan node)
