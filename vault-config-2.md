@@ -153,6 +153,7 @@ export VAULT_ADDR='http://<IP_PUBLIC>:8200'
 vault operator init (Lakukan di satu node saja)
 vault operator unseal (Lakukan di semua node)
 ```
+NOTES: Simpan unseal keys dan root token
 ### 2.6 Verifikasi
 ```bash
 vault status
