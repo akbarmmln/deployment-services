@@ -29,6 +29,43 @@ sudo mkdir -p /etc/consul.d /opt/consul
 sudo useradd --system --home /etc/consul.d --shell /bin/false consul
 sudo chown -R consul:consul /etc/consul.d /opt/consul
 ```
+### 1.3 Konfigurasi Consul (di semua node)
+file ada di /etc/consul.d/consul.hcl
+```bash
+datacenter = "dc1"
+node_name = "nodex"
+server = true
+bootstrap_expect = 2
+data_dir = "/opt/consul"
+bind_addr = "0.0.0.0"
+advertise_addr = "IP_NODE_PUBLIC"
+retry_join = ["IP_NODE_PUBLIC_LAIN"]
+ui = true
+```
+### 1.4 Service Systemd Consul (di semua node)
+```bash
+[Unit]
+Description=Consul
+Requires=network-online.target
+After=network-online.target
+
+[Service]
+User=consul
+Group=consul
+ExecStart=/usr/local/bin/consul agent -config-dir=/etc/consul.d/
+ExecReload=/bin/kill -HUP $MAINPID
+KillMode=process
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+```
+### 1.5 Start Consul (di semua node)
+```bash
+sudo systemctl daemon-reexec
+sudo systemctl enable consul
+sudo systemctl start consul
+```
 
 
 
