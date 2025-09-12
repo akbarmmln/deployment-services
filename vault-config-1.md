@@ -1,4 +1,4 @@
-# konfigurasi Vault Cluster dengan raf
+# konfigurasi Vault Cluster dengan raft
 node 1 : 47.237.117.191 node 2 : 47.237.117.192 node 3 : 47.237.117.193 (sebagai load balancer nya)
 
 ### 1. Instalasi & Konfigurasi Vault (di semua node)
@@ -63,7 +63,8 @@ file ada di /etc/vault/config.hcl
     vault operator init (Lakukan di satu node saja)
     vault operator unseal (Lakukan di semua node)
 ```
-7.  Join Vault (jika ada tambahan node)
+NOTES: Simpan unseal keys dan root token
+### 7. Join Vault (jika ada tambahan node)
     case: Node 3 (baru): 47.237.117.193
     langkah 1, 2 dan 3, pada langkah ke-3 Jangan isi retry_join di sini, karena kita akan join secara manual
     lalu joinkan
