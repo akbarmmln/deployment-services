@@ -7,12 +7,20 @@ node 1 : 47.237.117.191 node 2 : 47.237.117.192 node 3 : 47.237.117.193 (sebagai
 sudo apt update
 sudo apt install unzip curl -y
 ```
-CARA 1:
+simpan dengan nama install_latest_consul.sh -> chmod +x install_latest_consul.sh
 ```bash
-CONSUL_VERSION="1.16.2"
+#!/bin/bash
+# Ambil versi terbaru Consul dari situs HashiCorp
+CONSUL_VERSION=$(curl -s https://releases.hashicorp.com/consul/ | grep -oP 'consul/\K[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+# Tampilkan versi yang akan didownload
+echo "Consul version terbaru: $CONSUL_VERSION"
+# Download file ZIP
 curl -O https://releases.hashicorp.com/consul/${CONSUL_VERSION}/consul_${CONSUL_VERSION}_linux_amd64.zip
+# Ekstrak dan install
 unzip consul_${CONSUL_VERSION}_linux_amd64.zip
 sudo mv consul /usr/local/bin/
+rm consul_${CONSUL_VERSION}_linux_amd64.zip
+# Cek versi terinstal
 consul -v
 ```
 ### 2. Buat direktori dan user Vault
