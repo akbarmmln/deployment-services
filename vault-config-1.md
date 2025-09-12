@@ -8,10 +8,9 @@ sudo mkdir -p /etc/vault.d /var/lib/vault/data
 sudo useradd --system --home /etc/vault.d --shell /bin/false vault
 sudo chown -R vault:vault /etc/vault.d /var/lib/vault/data
 ```
-
-
-# 3. Konfigurasi Vault Raft (di semua node)
-    -> /etc/vault/config.hcl
+### 3. Konfigurasi Vault Raft (di semua node)
+file ada di /etc/vault/config.hcl
+```bash
     listener "tcp" {
       address     = "0.0.0.0:8200"
       tls_disable = 1
@@ -32,6 +31,7 @@ sudo chown -R vault:vault /etc/vault.d /var/lib/vault/data
     cluster_addr = "http://<IP_NODE_PUBLIC_SELFT>:8201"
     ui = true
     disable_mlock = true
+```
 4.  Service systemd Vault
 5.  Start vault
 6.  Unseal Vault
