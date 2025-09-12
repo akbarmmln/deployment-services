@@ -1,4 +1,4 @@
-======= konfigurasi Vault Cluster dengan raft =======
+# konfigurasi Vault Cluster dengan raf
 node 1 : 47.237.117.191 node 2 : 47.237.117.192 node 3 : 47.237.117.193 (sebagai load balancer nya)
 1.  Instalasi & Konfigurasi Vault (di semua node)
 2.  Buat direktori dan user Vault
