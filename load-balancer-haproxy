@@ -316,6 +316,7 @@ backend ms_auth_backend_area1
     http-check send meth GET uri /ms-auth/healthcheck/healty ver HTTP/1.1 hdr Host newistio-sit.tfal.biz.id
     server cluster1 istiocl1-sit.tfal.biz.id:80 check resolvers dns resolve-prefer ipv4 init-addr last,libc,none inter 5000 fall 2 rise 2
     server cluster2 istiocl2-sit.tfal.biz.id:80 check resolvers dns resolve-prefer ipv4 init-addr last,libc,none inter 5000 fall 2 rise 2
+    http-response add-header X-Backend-Server %[srv_name]
     option log-health-checks
 
 backend ms_auth_backend_area2
@@ -326,6 +327,7 @@ backend ms_auth_backend_area2
     http-check send meth GET uri /ms-auth/healthcheck/healty ver HTTP/1.1 hdr Host newistio-sit.tfal.biz.id
     server cluster3 istiocl3-sit.tfal.biz.id:80 check resolvers dns resolve-prefer ipv4 init-addr last,libc,none inter 5000 fall 2 rise 2
     server cluster4 istiocl4-sit.tfal.biz.id:80 check resolvers dns resolve-prefer ipv4 init-addr last,libc,none inter 5000 fall 2 rise 2
+    http-response add-header X-Backend-Server %[srv_name]
     option log-health-checks
 
 backend ms_auth_backend_area3
@@ -336,6 +338,7 @@ backend ms_auth_backend_area3
     http-check send meth GET uri /ms-auth/healthcheck/healty ver HTTP/1.1 hdr Host newistio-sit.tfal.biz.id
     server cluster5 istiocl5-sit.tfal.biz.id:80 check resolvers dns resolve-prefer ipv4 init-addr last,libc,none inter 5000 fall 2 rise 2
     server cluster6 istiocl6-sit.tfal.biz.id:80 check resolvers dns resolve-prefer ipv4 init-addr last,libc,none inter 5000 fall 2 rise 2
+    http-response add-header X-Backend-Server %[srv_name]
     option log-health-checks
 
 ########################################
