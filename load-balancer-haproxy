@@ -265,6 +265,9 @@ frontend https_frontend
     # map_ip returns the value for the first matching CIDR; default value = area1
     http-request set-var(req.area) src,map_ip(/etc/haproxy/maps/geo_area.map,area1)
 
+    # --- Tambahkan header custom ke response ---
+    http-response add-header X-Client-Area %[var(req.area)]
+
     acl area1 var(req.area) -m str area1
     acl area2 var(req.area) -m str area2
     acl area3 var(req.area) -m str area3    
