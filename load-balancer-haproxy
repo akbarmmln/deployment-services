@@ -178,6 +178,10 @@ listen health_monitor
 
 ===============================================================================================================================================================================
 CARA KEDUA
+########################################
+# HAProxy - Load-Balancing with Dynamic DNS + GEO Routing
+########################################
+
 global
     log /dev/log    local0
     log /dev/log    local1 notice
@@ -187,23 +191,44 @@ global
     user haproxy
     group haproxy
     daemon
+    maxconn 50000
     ca-base /etc/ssl/certs
     crt-base /etc/ssl/private
     ssl-default-bind-ciphers ECDH+AESGCM:DH+AESGCM:ECDH+AES256:DH+AES256:ECDH+AES128:DH+AES:RSA+AESGCM:RSA+AES:!aNULL:!MD5:!DSS
     ssl-default-bind-options no-sslv3 no-tlsv10 no-tlsv11
     tune.ssl.default-dh-param 2048
 
+########################################
+# DNS RESOLVERS — Dynamic DNS support
+########################################
+resolvers dns
+    # gunakan DNS lokal jika tersedia; contoh fallback ke public
+    parse-resolv-conf
+    nameserver dns1 8.8.8.8:53
+    nameserver dns2 1.1.1.1:53
+    accepted_payload_size 8192
+    resolve_retries       3
+    timeout resolve       5s
+    timeout retry         1s
+    hold valid            10s   # re-resolve tiap 10s (sesuaikan kalau mau lebih cepat/ lambat)
+
+########################################
+# Defaults
+########################################
 defaults
-    mode http
     log global
+    mode http
     option httplog
     option dontlognull
     option log-health-checks
     option forwardfor
     option http-server-close
-    timeout connect 5000ms
-    timeout client 50000ms
-    timeout server 50000ms
+    option logasap                    # segera kirim log untuk observability
+    timeout connect 5s
+    timeout client  50s
+    timeout server  50s
+    timeout http-request 10s
+    default-server init-addr last,libc,none
     errorfile 400 /etc/haproxy/errors/400.http
     errorfile 403 /etc/haproxy/errors/403.http
     errorfile 408 /etc/haproxy/errors/408.http
@@ -211,85 +236,140 @@ defaults
     errorfile 502 /etc/haproxy/errors/502.http
     errorfile 503 /etc/haproxy/errors/503.http
     errorfile 504 /etc/haproxy/errors/504.http
-
-# Frontend untuk HTTP (redirect ke HTTPS)
-frontend http_frontend
+    
+########################################
+# HTTP frontend (redirect to HTTPS)
+########################################
+frontend http_front
     bind *:80
-    redirect scheme https code 301 if !{ ssl_fc }
+    http-request redirect scheme https code 301 unless { ssl_fc }
 
-# Frontend untuk HTTPS dengan path-based routing
+########################################
+# HTTPS frontend (Geo selection + path + host routing)
+########################################
 frontend https_frontend
     bind *:443 ssl crt /etc/haproxy/certs/istio-sit.pem alpn h2,http/1.1
-    
-    # Menambahkan header untuk identifikasi load balancer
+
+    # --- HOST ACLs ---
+    acl host_jenkins    hdr(host) -i jenkins.tfal.biz.id
+    acl host_istio      hdr(host) -i newistio-sit.tfal.biz.id
+
+    # --- ACL services---
+    acl path_ms_auth    path_beg -i /ms-auth /v2-ms-auth
+    acl path_ms_account path_beg -i /ms-account /v2-ms-account
+    acl path_ms_support path_beg -i /ms-support /v2-ms-support
+    acl path_ms_payment path_beg -i /ms-payment /v2-ms-payment
+
+    # --- GEO: lookup area from client IP using map_ip
+    # Map file must exist at /etc/haproxy/maps/geo_area.map
+    # map_ip returns the value for the first matching CIDR; default value = area1
+    http-request set-var(req.area) src,map_ip(/etc/haproxy/maps/geo_area.map,area1)
+
+    acl area1 var(req.area) -m str area1
+    acl area2 var(req.area) -m str area2
+    acl area3 var(req.area) -m str area3    
+
+    # --- Debug header (optional, remove in prod if not wanted) ---
+    http-request add-header X-Debug-Area %[var(req.area)]
+
+    # --- ROUTING Jenkins---
+    use_backend jenkins_backend             if host_jenkins
+
+    # --- ROUTING Service---
+    # Mengarahkan ke backend sesuai AREA
+    use_backend ms_auth_backend_area1              if host_istio path_ms_auth area1
+    use_backend ms_auth_backend_area2              if host_istio path_ms_auth area2
+    use_backend ms_auth_backend_area3              if host_istio path_ms_auth area3
+
+    # use_backend ms_account_backend_area1           if host_istio path_ms_account area1
+    # use_backend ms_account_backend_area2           if host_istio path_ms_account area2
+    # use_backend ms_account_backend_area3           if host_istio path_ms_account area3
+
+    # use_backend ms_support_backend_area1           if host_istio path_ms_support area1
+    # use_backend ms_support_backend_area2           if host_istio path_ms_support area2
+    # use_backend ms_support_backend_area3           if host_istio path_ms_support area3
+
+    # use_backend ms_payment_backend_area1           if host_istio path_ms_payment area1
+    # use_backend ms_payment_backend_area2           if host_istio path_ms_payment area2
+    # use_backend ms_payment_backend_area3           if host_istio path_ms_payment area3
+
+    # --- Forward headers---
     http-request set-header X-Forwarded-For %[src]
     http-request set-header X-Forwarded-Proto https
     http-request set-header X-Forwarded-Host %[req.hdr(Host)]
     http-request set-header X-Forwarded-Port 443
-    
-    # ACL untuk host validation
-    acl is_istio_sit hdr(host) -i newistio-sit.tfal.biz.id
-    
-    # ACL untuk path-based routing
-    acl path_ms_auth path_beg /ms-auth
-    acl path_ms_account path_beg /ms-account
-    
-    # Stats page ACL
-    acl is_stats path_beg /haproxy-stats
-    
-    # Routing ms-auth ke dua cluster (50:50)
-    use_backend ms_auth_backend_cluster1 if is_istio_sit path_ms_auth { rand(100) lt 50 }
-    use_backend ms_auth_backend_cluster2 if is_istio_sit path_ms_auth
 
-    # Routing ms-account ke dua cluster (50:50)
-    use_backend ms_account_backend_cluster1 if is_istio_sit path_ms_account { rand(100) lt 50 }
-    use_backend ms_account_backend_cluster2 if is_istio_sit path_ms_account
+########################################
+# BACKENDS — Area-specific clusters (each service has area-specific backends)
+# Each server line uses dynamic DNS resolution and prefers IPv4
+########################################
 
-    use_backend stats if is_stats
-    
-# Backend untuk ms-auth service
-backend ms_auth_backend_cluster1
-    http-request set-header Host istiogcp1-sit.tfal.biz.id
-    server s1 istiogcp1-sit.tfal.biz.id:443 ssl sni str(istiogcp1-sit.tfal.biz.id) verify none alpn h2,http/1.1 ssl-min-ver TLSv1.2
-backend ms_auth_backend_cluster2
-    http-request set-header Host istiogcp1-sit.tfal.biz.id
-    server s2 istiogcp1-sit.tfal.biz.id:443 ssl sni str(istiogcp1-sit.tfal.biz.id) verify none alpn h2,http/1.1 ssl-min-ver TLSv1.2
+# --- ms-auth area backends---
+backend ms_auth_backend_area1
+    mode http
+    balance roundrobin
+    option httpchk
+    http-check connect port 80
+    http-check send meth GET uri /ms-auth/healthcheck/healty ver HTTP/1.1 hdr Host newistio-sit.tfal.biz.id
+    server cluster1 istiocl1-sit.tfal.biz.id:80 check resolvers dns resolve-prefer ipv4 init-addr last,libc,none inter 5000 fall 2 rise 2
+    server cluster2 istiocl2-sit.tfal.biz.id:80 check resolvers dns resolve-prefer ipv4 init-addr last,libc,none inter 5000 fall 2 rise 2
+    option log-health-checks
 
-# Backend untuk ms-account service
-backend ms_account_backend_cluster1
-    http-request set-header Host istiogcp1-sit.tfal.biz.id
-    server s1 istiogcp1-sit.tfal.biz.id:443 ssl sni str(istiogcp1-sit.tfal.biz.id) verify none alpn h2,http/1.1 ssl-min-ver TLSv1.2
+backend ms_auth_backend_area2
+    mode http
+    balance roundrobin
+    option httpchk
+    http-check connect port 80
+    http-check send meth GET uri /ms-auth/healthcheck/healty ver HTTP/1.1 hdr Host newistio-sit.tfal.biz.id
+    server cluster3 istiocl3-sit.tfal.biz.id:80 check resolvers dns resolve-prefer ipv4 init-addr last,libc,none inter 5000 fall 2 rise 2
+    server cluster4 istiocl4-sit.tfal.biz.id:80 check resolvers dns resolve-prefer ipv4 init-addr last,libc,none inter 5000 fall 2 rise 2
+    option log-health-checks
 
-backend ms_account_backend_cluster2
-    http-request set-header Host istiogcp1-sit.tfal.biz.id
-    server s2 istiogcp1-sit.tfal.biz.id:443 ssl sni str(istiogcp1-sit.tfal.biz.id) verify none alpn h2,http/1.1 ssl-min-ver TLSv1.2
+backend ms_auth_backend_area3
+    mode http
+    balance roundrobin
+    option httpchk
+    http-check connect port 80
+    http-check send meth GET uri /ms-auth/healthcheck/healty ver HTTP/1.1 hdr Host newistio-sit.tfal.biz.id
+    server cluster5 istiocl5-sit.tfal.biz.id:80 check resolvers dns resolve-prefer ipv4 init-addr last,libc,none inter 5000 fall 2 rise 2
+    server cluster6 istiocl6-sit.tfal.biz.id:80 check resolvers dns resolve-prefer ipv4 init-addr last,libc,none inter 5000 fall 2 rise 2
+    option log-health-checks
 
-# Backend untuk statistics
-backend stats
-    stats enable
-    stats uri /haproxy-stats
-    stats realm HAProxy\ Statistics
-    stats auth admin:admin123
-    stats refresh 30s
-    stats show-node
-    stats show-legends
+########################################
+# Jenkins Backend
+########################################
+backend jenkins_backend
+    mode http
+    balance roundrobin
+    option httpchk
+    http-check connect port 8080
+    http-check send meth GET uri /login ver HTTP/1.1 hdr Host jenkins.tfal.biz.id
+    http-check expect status 200
 
-# Listen block untuk monitoring
+    server jenkins_remote 127.0.0.1:8080 check
+
+########################################
+# Stats UI
+########################################
 listen stats
     bind *:8404
     stats enable
     stats uri /stats
     stats refresh 10s
+    stats show-node
+    stats show-legends
+    stats auth admin:admin123
     stats admin if TRUE
-    
-# Listen block untuk health check monitoring (opsional)
+
+########################################
+# Health Monitor
+########################################
 listen health_monitor
     bind *:8405
     mode http
     monitor-uri /health
-    
+
     # Return 200 jika HAProxy berjalan dengan baik
-    monitor fail if { nbsrv(ms_auth_backend_cluster1) eq 0 }
-    monitor fail if { nbsrv(ms_auth_backend_cluster2) eq 0 }
-    monitor fail if { nbsrv(ms_account_backend_cluster1) eq 0 }
-    monitor fail if { nbsrv(ms_account_backend_cluster2) eq 0 }
+    monitor fail if { nbsrv(ms_auth_backend_area1) eq 0 }
+    monitor fail if { nbsrv(ms_auth_backend_area2) eq 0 }
+    monitor fail if { nbsrv(ms_auth_backend_area3) eq 0 }
