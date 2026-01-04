@@ -95,6 +95,7 @@ https://github.com/istio/istio/tree/release-1.23
 -> kubectl describe node <nodename> | grep Taints
 -> kubectl taint node <nodename> node-role.kubernetes.io/master:NoSchedule-
 
+kubeadm token create --print-join-command
 
 kubectl delete pod --all-namespaces --field-selector=status.phase==Succeeded
 kubectl delete pod --all-namespaces --field-selector=status.phase==Failed
