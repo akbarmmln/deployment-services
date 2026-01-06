@@ -32,10 +32,10 @@ cd pki
 ```
 
 ## 1.2 Buat CA (1 KALI)
+```bash
 openssl genrsa -out ca/ca.key 4096
 
 openssl req -x509 -new -nodes \
-```bash
   -key ca/ca.key \
   -subj "/CN=kubernetes-ca" \
   -days 3650 \
