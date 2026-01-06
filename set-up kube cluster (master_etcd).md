@@ -122,3 +122,52 @@ chmod ketat:
 chmod 600 /etc/etcd/pki/*.key
 chown etcd:etcd /etc/etcd/pki/*
 ```
+
+## 1.5 systemd unit
+> masuk ke node etcd : /etc/systemd/system/etcd.service
+```bash
+[Unit]
+Description=etcd
+Documentation=https://etcd.io
+After=network.target
+
+[Service]
+User=etcd
+Type=notify
+ExecStart=/usr/local/bin/etcd \
+  --name=etcd-1 \
+  --data-dir=/var/lib/etcd \
+  \
+  --initial-advertise-peer-urls=https://10.0.0.11:2380 \
+  --listen-peer-urls=https://10.0.0.11:2380 \
+  \
+  --advertise-client-urls=https://10.0.0.11:2379 \
+  --listen-client-urls=https://10.0.0.11:2379,https://127.0.0.1:2379 \
+  \
+  --initial-cluster=etcd-1=https://10.0.0.11:2380,etcd-2=https://10.0.0.12:2380,etcd-3=https://10.0.0.13:2380 \
+  --initial-cluster-state=new \
+  --initial-cluster-token=etcd-cluster-1 \
+  \
+  --cert-file=/etc/etcd/pki/etcd-1.crt \
+  --key-file=/etc/etcd/pki/etcd-1.key \
+  --trusted-ca-file=/etc/etcd/pki/ca.crt \
+  --client-cert-auth=true \
+  \
+  --peer-cert-file=/etc/etcd/pki/etcd-1.crt \
+  --peer-key-file=/etc/etcd/pki/etcd-1.key \
+  --peer-trusted-ca-file=/etc/etcd/pki/ca.crt \
+  --peer-client-cert-auth=true \
+  \
+  --snapshot-count=10000 \
+  --heartbeat-interval=100 \
+  --election-timeout=1000
+
+Restart=always
+RestartSec=10
+LimitNOFILE=40000
+
+[Install]
+WantedBy=multi-user.target
+```
+
+➡️ **ini sample untuk etcd-1. lakukan hal serupa dengan penggantian beberapa parameter sesuai node etcd nya. lakukan di semua node**
