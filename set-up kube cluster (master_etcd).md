@@ -98,3 +98,8 @@ curl -L https://github.com/etcd-io/etcd/releases/download/${ETCD_VER}/etcd-${ETC
 
 mv etcd-${ETCD_VER}-linux-amd64/etcd* /usr/local/bin/
 ```
+
+Cek:
+```bash
+etcd --version
+```
