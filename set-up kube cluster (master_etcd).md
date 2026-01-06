@@ -42,7 +42,7 @@ openssl req -x509 -new -nodes \
   -out ca/ca.crt
 ```
 
-## FASE 2 — TLS ETCD (PER NODE, DIBUAT TERPUSAT)
+## FASE 2 — TLS ETCD (PER NODE, DIBUAT TERPUSAT) -> NODE ADMIN SEKALIAN
 
 ## 2.1 Buat cert ETCD SERVER + PEER (per node)
 ```bash
