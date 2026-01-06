@@ -115,4 +115,10 @@ chown -R etcd:etcd /var/lib/etcd /etc/etcd
 ```
 
 ## 1.4 Copy TLS (PER NODE)
-> ada pada FASE 2 poin 2.2
+ada pada FASE 2 poin 2.2
+
+chmod ketat:
+```bash
+chmod 600 /etc/etcd/pki/*.key
+chown etcd:etcd /etc/etcd/pki/*
+```
