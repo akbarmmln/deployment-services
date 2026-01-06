@@ -67,7 +67,54 @@ extendedKeyUsage=serverAuth,clientAuth
 EOF
 )
 ```
+➡️ **Ulangi untuk etcd-2 & etcd-3**
+(ganti IP & CN)
 
+---------ATAU DENGAN CONFIG CN---------
+
+> buat file openssl-san-etcd1.cnf (lakukan satu per satu)
+```bash
+[ req ]
+default_bits       = 2048
+prompt             = no
+default_md         = sha256
+distinguished_name = dn
+req_extensions     = req_ext
+
+[ dn ]
+C  = ID
+ST = Jakarta
+L  = Jakarta
+O  = Kubernetes
+OU = ETCD
+CN = etcd-1
+
+[ req_ext ]
+subjectAltName = @alt_names
+extendedKeyUsage = serverAuth, clientAuth
+
+[ alt_names ]
+DNS.1 = etcd-1
+IP.1  = 10.0.0.11
+```
+
+```bash
+openssl genrsa -out etcd/etcd-1.key 4096
+
+openssl req -new -key etcd/etcd-1.key \
+  -subj "/CN=etcd-1" \
+  -out etcd/etcd-1.csr
+```
+
+```bash
+openssl x509 -req \
+  -in etcd/etcd-1.csr \
+  -CA ca/ca.crt -CAkey ca/ca.key -CAcreateserial \
+  -out etcd/etcd-1.crt \
+  -days 365 \
+  -extensions req_ext \
+  -extfile openssl-san.cnf
+```
 ➡️ **Ulangi untuk etcd-2 & etcd-3**
 (ganti IP & CN)
 
