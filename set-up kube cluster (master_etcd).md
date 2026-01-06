@@ -82,13 +82,13 @@ etcd-(x).key
 
 ## FASE 3 — Jalankan ETCD (di masing-masing node)
 
-## 1.1 Set hostname (WAJIB)
+## 3.1 Set hostname (WAJIB)
 ```bash
 hostnamectl set-hostname etcd-1
 ```
 ➡️ **selesaikan sampai semua node**
 
-## 1.2 Install etcd (manual binary – DISARANKAN)
+## 3.2 Install etcd (manual binary – DISARANKAN)
 > Jangan pakai repo OS → versi sering ketinggalan
 
 ```bash
@@ -104,7 +104,7 @@ Cek:
 etcd --version
 ```
 
-## 1.3 Buat user & direktori
+## 3.3 Buat user & direktori
 ```bash
 useradd -r -s /sbin/nologin etcd
 
@@ -114,7 +114,7 @@ mkdir -p /etc/etcd/pki
 chown -R etcd:etcd /var/lib/etcd /etc/etcd
 ```
 
-## 1.4 Copy TLS (PER NODE)
+## 3.4 Copy TLS (PER NODE)
 > ada pada FASE 2 poin 2.2
 
 chmod ketat:
@@ -123,7 +123,7 @@ chmod 600 /etc/etcd/pki/*.key
 chown etcd:etcd /etc/etcd/pki/*
 ```
 
-## 1.5 systemd unit
+## 3.5 systemd unit
 > masuk ke node etcd : /etc/systemd/system/etcd.service
 ```bash
 [Unit]
@@ -172,7 +172,7 @@ WantedBy=multi-user.target
 
 ➡️ **ini sample untuk etcd-1. lakukan hal serupa dengan penggantian beberapa parameter sesuai node etcd nya. lakukan di semua node etcd**
 
-## 1.6 Reload systemd
+## 3.6 Reload systemd
 > masuk ke node etcd
 ```bash
 systemctl daemon-reexec
@@ -180,7 +180,7 @@ systemctl daemon-reload
 ```
 ➡️ **lakukan di semua node etcd**
 
-## 1.7 Start SEMUA node
+## 3.7 Start SEMUA node
 > masuk ke node etcd
 ```bash
 systemctl enable etcd
@@ -188,12 +188,12 @@ systemctl start etcd
 ```
 ➡️ **lakukan di semua node etcd**
 
-## 1.8 Verifikasi status
+## 3.8 Verifikasi status
 ```bash
 systemctl status etcd
 ```
 
-## 1.9 Validasi (dari salah satu node etcd)
+## 3.9 Validasi (dari salah satu node etcd)
 ```bash
 ETCDCTL_API=3 etcdctl \
   --endpoints=https://10.0.0.11:2379 \
@@ -203,7 +203,7 @@ ETCDCTL_API=3 etcdctl \
   member list
 ```
 
-## 1.10 Cek kesehatan
+## 3.10 Cek kesehatan
 ```bash
 ETCDCTL_API=3 etcdctl \
   --endpoints=https://10.0.0.11:2379,https://10.0.0.12:2379,https://10.0.0.13:2379 \
@@ -212,3 +212,68 @@ ETCDCTL_API=3 etcdctl \
   --key=/etc/etcd/pki/etcd-1.key \
   endpoint health
 ```
+
+## FASE 4 — TLS APISERVER → ETCD (1 KALI) -> NODE ADMIN SEKALIAN
+
+## 4.1 Buat cert client khusus apiserver
+```bash
+openssl genrsa -out apiserver/apiserver-etcd-client.key 4096
+
+openssl req -new \
+  -key apiserver/apiserver-etcd-client.key \
+  -subj "/CN=kube-apiserver-etcd-client" \
+  -out apiserver/apiserver-etcd-client.csr
+```
+
+```bash
+openssl x509 -req \
+  -in apiserver/apiserver-etcd-client.csr \
+  -CA ca/ca.crt -CAkey ca/ca.key -CAcreateserial \
+  -out apiserver/apiserver-etcd-client.crt \
+  -days 365 \
+  -extensions v3_client \
+  -extfile <(cat <<EOF
+[v3_client]
+extendedKeyUsage=clientAuth
+EOF
+)
+```
+
+## 4.2 Copikan File ke SEMUA MASTER
+```bash
+/etc/kubernetes/pki/
+  ca.crt
+  apiserver-etcd-client.crt
+  apiserver-etcd-client.key
+```
+
+## 4.3 KUBEADM CONFIG (MASTER-1)
+```bash
+apiVersion: kubeadm.k8s.io/v1beta3
+kind: ClusterConfiguration
+kubernetesVersion: v1.29.0
+controlPlaneEndpoint: "lb.example.local:6443"
+etcd:
+  external:
+    endpoints:
+      - https://10.0.0.11:2379
+      - https://10.0.0.12:2379
+      - https://10.0.0.13:2379
+    caFile: /etc/kubernetes/pki/ca.crt
+    certFile: /etc/kubernetes/pki/apiserver-etcd-client.crt
+    keyFile: /etc/kubernetes/pki/apiserver-etcd-client.key
+networking:
+  podSubnet: 192.168.0.0/16
+```
+
+## 4.4 Init cluster
+```bash
+kubeadm init --config kubeadm-config.yaml --upload-certs
+```
+> --upload-certs WAJIB untuk multi-master
+
+## 4.5 JOIN MASTER LAIN
+> ikuti petunjuk di kube cluster
+
+## 4.5 JOIN WORKER LAIN
+> ikuti petunjuk di kube cluster
