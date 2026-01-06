@@ -84,9 +84,17 @@ etcd-(x).key
 
 ## 1.1 Set hostname (WAJIB)
 ```bash
-hostnamectl set-hostname etcd-1
-
 selesaikan sampai semua node
 ```
+> hostnamectl set-hostname etcd-1
 
 ## 1.2 Install etcd (manual binary – DISARANKAN)
+> Jangan pakai repo OS → versi sering ketinggalan
+
+```bash
+ETCD_VER=v3.5.13
+curl -L https://github.com/etcd-io/etcd/releases/download/${ETCD_VER}/etcd-${ETCD_VER}-linux-amd64.tar.gz \
+  | tar xz
+
+mv etcd-${ETCD_VER}-linux-amd64/etcd* /usr/local/bin/
+```
