@@ -79,6 +79,7 @@ ca.crt
 etcd-(x).crt
 etcd-(x).key
 ```
+> /etc/etcd/pki/.....
 
 ## FASE 3 — Jalankan ETCD (di masing-masing node)
 
