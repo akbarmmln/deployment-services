@@ -70,3 +70,23 @@ EOF
 
 ➡️ **Ulangi untuk etcd-2 & etcd-3**
 (ganti IP & CN)
+
+## 2.2. File yang dikirim ke tiap ETCD NODE
+```bash
+(x) ganti dengan nama etcd yang sudah dibuat, ke setiap node etcd
+
+ca.crt
+etcd-(x).crt
+etcd-(x).key
+```
+
+## FASE 3 — Jalankan ETCD (di masing-masing node)
+
+## 1.1 Set hostname (WAJIB)
+```bash
+hostnamectl set-hostname etcd-1
+
+selesaikan sampai semua node
+```
+
+## 1.2 Install etcd (manual binary – DISARANKAN)
