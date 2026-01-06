@@ -23,7 +23,7 @@ CONTROL PLANE ENDPOINT (HA)
 
 ## FASE 1 — NODE ADMIN (1 KALI SAJA)
 > Bisa laptop admin atau **1 VM khusus**
-> **TIDAK HARUS** salah satu node etcd / master
+> **DILUAR** node etcd / master
 
 ## 1.1 Struktur Direktori
 ```bash
