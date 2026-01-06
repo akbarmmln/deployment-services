@@ -84,9 +84,9 @@ etcd-(x).key
 
 ## 1.1 Set hostname (WAJIB)
 ```bash
-selesaikan sampai semua node
+hostnamectl set-hostname etcd-1
 ```
-> hostnamectl set-hostname etcd-1
+> ➡️ **selesaikan sampai semua node**
 
 ## 1.2 Install etcd (manual binary – DISARANKAN)
 > Jangan pakai repo OS → versi sering ketinggalan
