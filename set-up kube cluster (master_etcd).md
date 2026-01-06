@@ -170,4 +170,45 @@ LimitNOFILE=40000
 WantedBy=multi-user.target
 ```
 
-➡️ **ini sample untuk etcd-1. lakukan hal serupa dengan penggantian beberapa parameter sesuai node etcd nya. lakukan di semua node**
+➡️ **ini sample untuk etcd-1. lakukan hal serupa dengan penggantian beberapa parameter sesuai node etcd nya. lakukan di semua node etcd**
+
+## 1.6 Reload systemd
+> masuk ke node etcd
+```bash
+systemctl daemon-reexec
+systemctl daemon-reload
+```
+➡️ **lakukan di semua node etcd**
+
+## 1.7 Start SEMUA node
+> masuk ke node etcd
+```bash
+systemctl enable etcd
+systemctl start etcd
+```
+➡️ **lakukan di semua node etcd**
+
+## 1.8 Verifikasi status
+```bash
+systemctl status etcd
+```
+
+## 1.9 Validasi (dari salah satu node etcd)
+```bash
+ETCDCTL_API=3 etcdctl \
+  --endpoints=https://10.0.0.11:2379 \
+  --cacert=/etc/etcd/pki/ca.crt \
+  --cert=/etc/etcd/pki/etcd-1.crt \
+  --key=/etc/etcd/pki/etcd-1.key \
+  member list
+```
+
+## 1.10 Cek kesehatan
+```bash
+ETCDCTL_API=3 etcdctl \
+  --endpoints=https://10.0.0.11:2379,https://10.0.0.12:2379,https://10.0.0.13:2379 \
+  --cacert=/etc/etcd/pki/ca.crt \
+  --cert=/etc/etcd/pki/etcd-1.crt \
+  --key=/etc/etcd/pki/etcd-1.key \
+  endpoint health
+```
