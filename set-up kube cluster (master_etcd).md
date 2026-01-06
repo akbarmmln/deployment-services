@@ -103,3 +103,16 @@ Cek:
 ```bash
 etcd --version
 ```
+
+## 1.3 Buat user & direktori
+```bash
+useradd -r -s /sbin/nologin etcd
+
+mkdir -p /var/lib/etcd
+mkdir -p /etc/etcd/pki
+
+chown -R etcd:etcd /var/lib/etcd /etc/etcd
+```
+
+## 1.4 Copy TLS (PER NODE)
+> ada pada FASE 2 poin 2.2
