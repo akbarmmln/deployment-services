@@ -110,12 +110,13 @@ useradd -r -s /sbin/nologin etcd
 
 mkdir -p /var/lib/etcd
 mkdir -p /etc/etcd/pki
-
-chown -R etcd:etcd /var/lib/etcd /etc/etcd
 ```
 
 ## 3.4 Copy TLS (PER NODE)
 > ada pada FASE 2 poin 2.2
+```bash
+chown -R etcd:etcd /var/lib/etcd /etc/etcd
+```
 
 chmod ketat:
 ```bash
