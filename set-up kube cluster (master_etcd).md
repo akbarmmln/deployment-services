@@ -262,6 +262,16 @@ ETCDCTL_API=3 etcdctl \
   endpoint health
 ```
 
+## 3.11 Cek Leader
+```bash
+ETCDCTL_API=3 etcdctl \
+  --endpoints=https://10.0.0.11:2379,https://10.0.0.12:2379,https://10.0.0.13:2379 \
+  --cacert=/etc/etcd/pki/ca.crt \
+  --cert=/etc/etcd/pki/etcd-1.crt \
+  --key=/etc/etcd/pki/etcd-1.key \
+  endpoint status -w table
+```
+
 ## FASE 4 — TLS APISERVER → ETCD (1 KALI) -> NODE ADMIN SEKALIAN
 
 ## 4.1 Buat cert client khusus apiserver
