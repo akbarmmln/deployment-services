@@ -99,3 +99,13 @@ kubeadm token create --print-join-command
 
 kubectl delete pod --all-namespaces --field-selector=status.phase==Succeeded
 kubectl delete pod --all-namespaces --field-selector=status.phase==Failed
+
+INSTALL METRIC-SERVER
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+kubectl edit deployment metrics-server -n kube-system
+  put this content
+    containers:
+    - args:
+      - --kubelet-insecure-tls
+      - --kubelet-preferred-address-types=InternalIP,Hostname,ExternalIP
+kubectl rollout restart deployment metrics-server -n kube-system
