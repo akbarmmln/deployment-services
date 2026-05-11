@@ -24,7 +24,7 @@ lsmod | grep br_netfilter
 lsmod | grep overlay
 ==============================
 follow intructions of installing docker
--> containerd config default | sed 's/SystemdCgroup = false/SystemdCgroup = true/' | sed 's/sanbox_image = "registry.k8s.io\/pause:3.6"/sanbox_image = "registry.k8s.io\/pause:3.9"/' | sudo tee /etc/containerd/config.toml
+-> containerd config default | sed 's/SystemdCgroup = false/SystemdCgroup = true/' | sed 's/sandbox_image = "registry.k8s.io\/pause:3.6"/sandbox_image = "registry.k8s.io\/pause:3.9"/' | sudo tee /etc/containerd/config.toml
 -> sudo systemctl restart containerd
 ==============================
 follow intructions of installing kubeadm, kubelet and kubectl
