@@ -25,7 +25,7 @@ mysql --version
 ```bash
 sudo vi /etc/mysql/mysql.conf.d/mysqld.cnf
 ```
-
+> Tambahkan/Ubah :
 ```bash
 [mysqld]
 
