@@ -102,12 +102,12 @@ sudo systemctl restart mysql
 > Masih di MySQL Shell, koneksi ke mysql node 1 (calon primary):
 ```bash
 \connect clusteradmin@{ip-node-1}:3306
-var cluster = dba.create_cluster('myCluster')
+cluster = dba.create_cluster('myCluster')
 ```
 
 > Jika dba.createCluster telah dilakukan lalu koneksi tertutup, lakukan command ini
 ```bash
-var cluster = dba.get_cluster('myCluster')
+cluster = dba.get_cluster('myCluster')
 ```
 
 ## FASE 4.3 Menambahkan MYSQL Node ke Cluster
