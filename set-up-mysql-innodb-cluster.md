@@ -122,3 +122,64 @@ cluster.add_instance("clusteradmin@{ip-node}:3306")
 ```bash
 cluster.status()
 ```
+
+## FASE 5 Instalasi & Konfigurasi MySQL Router
+> Install MySQL Router
+```bash
+sudo apt install mysql-router -y
+```
+
+> Buat User Sistem mysqlrouter
+```bash
+sudo useradd --system --no-create-home --shell /usr/sbin/nologin mysqlrouter
+```
+
+> Verifikasi:
+```bash
+id mysqlrouter
+```
+
+> Lakukan bootstrap
+```bash
+sudo mkdir -p /opt/mysqlrouter
+
+sudo mysqlrouter --bootstrap clusteradmin@10.10.24.5:3306 \
+  --directory /opt/mysqlrouter \
+  --conf-use-sockets \
+  --account mysqlrouter_user \
+  --user=mysqlrouter \
+  --force
+
+sudo chown -R mysqlrouter:mysqlrouter /opt/mysqlrouter
+```
+
+> Edit systemd service
+```bash
+sudo nano /etc/systemd/system/mysqlrouter.service
+```
+
+```bash
+[Unit]
+Description=MySQL Router
+After=network.target
+
+[Service]
+Type=simple
+User=mysqlrouter
+ExecStart=/usr/bin/mysqlrouter -c /opt/mysqlrouter/mysqlrouter.conf
+Restart=on-failure
+RestartSec=5
+LimitNOFILE=65535
+
+[Install]
+WantedBy=multi-user.target
+```
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable mysqlrouter
+sudo systemctl start mysqlrouter
+sudo systemctl status mysqlrouter
+```
+
+
