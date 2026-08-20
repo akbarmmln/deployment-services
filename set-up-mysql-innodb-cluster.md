@@ -8,6 +8,19 @@ Node3 (192.168.10.13) → MySQL
 Router (192.168.10.20) → MySQL Router
 ```
 
+## FASE 0 — Persiapan Jaringan (Semua Node)
+> Set hostname tiap node
+```bash
+sudo hostnamectl set-hostname mysql-node-x
+```
+
+> Edit /etc/hosts di SEMUA node (termasuk router)
+```bash
+ip-node-1   mysql-node-1
+ip-node-x   mysql-node-x
+ip-node-router   mysql-router-1
+```
+
 ## FASE 1 — Install MySQL
 > Install di semua node
 ```bash
