@@ -41,6 +41,7 @@ enforce_gtid_consistency=ON
 transaction_write_set_extraction=XXHASH64
 ```
 
+> Setelah selesai, lakukan restart
 ```bash
 sudo systemctl restart mysql
 ```
