@@ -51,8 +51,31 @@ sudo systemctl restart mysql
 ```bash
 mysql -u root -p
 ```
-> LALU JALANKAN
+> Lalu jalankan
 ```bash
 CREATE USER 'clusteradmin'@'%' IDENTIFIED BY 'password';
 GRANT ALL PRIVILEGES ON *.* TO 'clusteradmin'@'%' WITH GRANT OPTION;
 ```
+
+## FASE 4 Install MySQL Shell
+> Boleh di node router, atau manapun
+```bash
+sudo apt install mysql-shell -y
+```
+
+> Cek versi:
+```bash
+mysqlsh --version
+```
+
+## FASE 4.1 Konfigurasi Tiap Instance untuk Group Replication
+> Dari mesin pada fase 4, jalankan MySQL Shell:
+```bash
+mysqlsh
+```
+
+
+
+
+
+
