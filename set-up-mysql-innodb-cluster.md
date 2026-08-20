@@ -74,7 +74,7 @@ mysqlsh --version
 mysqlsh
 ```
 
-> Lakukan configureInstance pada masing masing node db
+> Lakukan configureInstance pada masing masing mysql node db
 ```bash
 \connect clusteradmin@{ip-node-1}:3306
 dba.configure_instance()
