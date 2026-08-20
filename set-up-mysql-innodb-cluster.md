@@ -69,7 +69,7 @@ mysqlsh --version
 ```
 
 ## FASE 4.1 Konfigurasi Tiap Instance untuk Group Replication
-> Dari mesin pada fase 4, jalankan MySQL Shell untuk masuk MySQL Shell::
+> Dari mesin pada fase 4, jalankan command untuk masuk ke MySQL Shell:
 ```bash
 mysqlsh
 ```
