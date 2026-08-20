@@ -22,7 +22,10 @@ mysql --version
 
 ## FASE 2 — Konfigurasi MySQL
 > Lakukan di semua node, sesuaikan server-id (harus uniq di setiap node)
-> sudo vi /etc/mysql/mysql.conf.d/mysqld.cnf
+```bash
+sudo vi /etc/mysql/mysql.conf.d/mysqld.cnf
+```
+
 ```bash
 [mysqld]
 
