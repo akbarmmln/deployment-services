@@ -69,13 +69,43 @@ mysqlsh --version
 ```
 
 ## FASE 4.1 Konfigurasi Tiap Instance untuk Group Replication
-> Dari mesin pada fase 4, jalankan MySQL Shell:
+> Dari mesin pada fase 4, jalankan MySQL Shell untuk masuk MySQL Shell::
 ```bash
 mysqlsh
 ```
 
+> Lakukan configureInstance pada masing masing node db
+```bash
+\connect clusteradmin@{ip-node-1}:3306
+dba.configure_instance()
+```
 
+> Setelah selesai lakukan restart di semua mysql node
+```bash
+sudo systemctl restart mysql
+```
 
+## FASE 4.2 Membuat Cluster
+> Masih di MySQL Shell, koneksi ke mysql node 1 (calon primary):
+```bash
+\connect clusteradmin@{ip-node-1}:3306
+var cluster = dba.create_cluster('myCluster')
+```
 
+> Jika dba.createCluster telah dilakukan lalu koneksi tertutup, lakukan command ini
+```bash
+var cluster = dba.get_cluster('myCluster')
+```
 
+## FASE 4.3 Menambahkan MYSQL Node ke Cluster
+> Masih dalam session yang sama:
+```bash
+cluster.add_instance("clusteradmin@{ip-node}:3306")
+```
+> Lalu akan muncul prompt, pilih C(clone). Ulangi langkah ini di semua mysql node yang akan di join
 
+## FASE 4.4 Verifikasi
+> Cek status untuk melihat status cluster
+```bash
+cluster.status()
+```
