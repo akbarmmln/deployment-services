@@ -16,9 +16,9 @@ sudo hostnamectl set-hostname mysql-node-x
 
 > Edit /etc/hosts di SEMUA node (termasuk router)
 ```bash
-ip-node-1   mysql-node-1
-ip-node-x   mysql-node-x
-ip-node-router   mysql-router-1
+ip-node-1         mysql-node-1
+ip-node-x         mysql-node-x
+ip-node-router    mysql-router-1
 ```
 
 ## FASE 1 — Install MySQL
