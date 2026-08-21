@@ -190,4 +190,3 @@ sudo systemctl status mysqlrouter
 | `cluster.rejoinInstance()` | `cluster.rejoin_instance()` |
 | `cluster.removeInstance()` | `cluster.remove_instance()` |
 | `cluster.status()`         | `cluster.status()`          |
-└----------------------------┴-----------------------------┘
