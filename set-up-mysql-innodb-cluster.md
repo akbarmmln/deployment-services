@@ -182,4 +182,12 @@ sudo systemctl start mysqlrouter
 sudo systemctl status mysqlrouter
 ```
 
-
+| JavaScript                 | Python                      |
+| -------------------------- | --------------------------- |
+| `dba.configureInstance()`  | `dba.configure_instance()`  |
+| `dba.createCluster()`      | `dba.create_cluster()`      |
+| `cluster.addInstance()`    | `cluster.add_instance()`    |
+| `cluster.rejoinInstance()` | `cluster.rejoin_instance()` |
+| `cluster.removeInstance()` | `cluster.remove_instance()` |
+| `cluster.status()`         | `cluster.status()`          |
+└----------------------------┴-----------------------------┘
